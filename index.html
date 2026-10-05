@@ -3,397 +3,348 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>B2S - Inscription Repas Mensuel</title>
+    <title>B2S Saint-Malo - Inscription Repas Mensuel</title>
+    <!-- Tailwind CSS pour un design moderne et professionnel -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        'b2s-bordeaux': '#360E1D',
-                        'b2s-pink': '#E0266A',
-                        'b2s-light': '#F4F4F9',
+                        b2sBurgundy: '#4A1525',
+                        b2sRose: '#D946EF',
+                        b2sDark: '#2C0D16'
                     }
                 }
             }
         }
     </script>
-    <style>
-        body { font-family: 'Inter', sans-serif; background-color: #F4F4F9; }
-        .glass-panel { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
-        
-        /* Custom scrollbar for table */
-        .table-container::-webkit-scrollbar { height: 8px; }
-        .table-container::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
-        .table-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        .table-container::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        
-        /* Modal transitions */
-        .modal-enter { opacity: 0; transform: scale(0.9); }
-        .modal-enter-active { opacity: 1; transform: scale(1); transition: all 0.3s ease-out; }
-    </style>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
-<body class="text-gray-800 antialiased min-h-screen flex flex-col">
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between">
 
-    <header class="bg-b2s-bordeaux text-white py-6 shadow-md border-b-4 border-b2s-pink">
-        <div class="max-w-5xl mx-auto px-4 text-center sm:text-left flex flex-col sm:flex-row items-center justify-between">
-            <div class="flex flex-col items-center sm:items-start mb-4 sm:mb-0">
-                <img src="NEW LOGO B2S.jpg" alt="Logo B2S Saint-Malo" class="h-32 sm:h-48 md:h-56 object-contain rounded-md shadow-sm">
-            </div>
-            <div class="mt-4 sm:mt-0 text-center sm:text-right">
-                <div class="inline-block bg-white text-b2s-bordeaux px-4 py-2 rounded-lg shadow-sm font-semibold text-sm">
-                    Prochain Repas : <br class="sm:hidden" />
-                    <span id="next-date-display" class="text-b2s-pink">Calcul en cours...</span>
-                </div>
-            </div>
+    <!-- En-tête avec Logo -->
+    <header class="bg-b2sBurgundy text-white shadow-md py-6 px-4">
+        <div class="max-w-4xl mx-auto flex flex-col items-center text-center">
+            <!-- Logo d'origine agrandi sans perte de qualité -->
+            <img src="NEW LOGO B2S.jpg" alt="Logo B2S Saint-Malo" class="h-32 sm:h-48 md:h-56 object-contain mb-4 rounded shadow-sm" onerror="this.onerror=null; this.src='https://via.placeholder.com/300x100/4A1525/FFFFFF?text=B2S+SAINT-MALO';">
+            <h1 class="text-xl sm:text-2xl font-bold tracking-wide">Repas Mensuel des Membres</h1>
+            <p id="event-date" class="text-b2sRose font-medium mt-1 text-lg"></p>
         </div>
     </header>
 
-    <main class="flex-grow max-w-6xl mx-auto w-full px-4 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
-        <!-- Colonne Gauche : Formulaire -->
-        <div class="lg:col-span-1 space-y-6">
-            <div class="glass-panel rounded-2xl shadow-lg p-6 border-t-4 border-b2s-pink">
-                <h2 class="text-xl font-bold text-b2s-bordeaux mb-4 flex items-center gap-2">
-                    <svg class="w-5 h-5 text-b2s-pink" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                    Confirmer ma présence
-                </h2>
-                
-                <form id="rsvp-form" class="space-y-5">
-                    <div>
-                        <label for="memberName" class="block text-sm font-semibold text-gray-700 mb-1">Nom et Prénom</label>
-                        <input type="text" id="memberName" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-b2s-pink focus:border-b2s-pink outline-none transition-shadow" placeholder="Ex: Jean Dupont">
-                    </div>
+    <!-- Contenu Principal -->
+    <main class="max-w-4xl mx-auto px-4 py-8 w-full flex-grow">
 
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Présence au repas</label>
-                        <div class="flex gap-4">
-                            <label class="flex-1 cursor-pointer">
-                                <input type="radio" name="presence" value="yes" class="peer sr-only" required onchange="toggleGuests(true)">
-                                <div class="text-center px-4 py-2 border border-gray-300 rounded-lg peer-checked:bg-green-50 peer-checked:border-green-500 peer-checked:text-green-700 hover:bg-gray-50 transition-colors">
-                                    Oui, présent
-                                </div>
-                            </label>
-                            <label class="flex-1 cursor-pointer">
-                                <input type="radio" name="presence" value="no" class="peer sr-only" onchange="toggleGuests(false)">
-                                <div class="text-center px-4 py-2 border border-gray-300 rounded-lg peer-checked:bg-red-50 peer-checked:border-red-500 peer-checked:text-red-700 hover:bg-gray-50 transition-colors">
-                                    Non, absent
-                                </div>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div id="guests-section" class="hidden bg-gray-50 p-4 rounded-lg border border-gray-200">
-                        <label for="guestsCount" class="block text-sm font-semibold text-gray-700 mb-1">Nombre d'invités accompagnants</label>
-                        <p class="text-xs text-gray-500 mb-2">Facturation en sus par invité.</p>
-                        <div class="flex items-center gap-3">
-                            <button type="button" onclick="updateGuestCount(-1)" class="w-10 h-10 rounded-full bg-white border border-gray-300 flex items-center justify-center hover:bg-gray-100 text-lg font-bold text-gray-600">-</button>
-                            <input type="number" id="guestsCount" min="0" value="0" class="w-20 text-center px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-b2s-pink outline-none font-semibold text-lg" readonly>
-                            <button type="button" onclick="updateGuestCount(1)" class="w-10 h-10 rounded-full bg-white border border-gray-300 flex items-center justify-center hover:bg-gray-100 text-lg font-bold text-gray-600">+</button>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label for="comments" class="block text-sm font-semibold text-gray-700 mb-1">Commentaires</label>
-                        <p class="text-xs text-gray-500 mb-1">Régime alimentaire, message aux organisateurs...</p>
-                        <textarea id="comments" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-b2s-pink focus:border-b2s-pink outline-none transition-shadow resize-none" placeholder="Votre message ici..."></textarea>
-                    </div>
-
-                    <button type="submit" id="submit-btn" class="w-full bg-b2s-pink hover:bg-pink-700 text-white font-bold py-3 px-4 rounded-lg shadow-md transition-colors flex justify-center items-center gap-2">
-                        <span>Enregistrer ma réponse</span>
-                    </button>
-                </form>
-            </div>
-        </div>
-
-        <!-- Colonne Droite : Dashboard et Liste -->
-        <div class="lg:col-span-2 space-y-6">
+        <!-- Étape 1 : Identification du Membre -->
+        <section id="auth-section" class="bg-white rounded-xl shadow-md p-6 mb-8 border border-slate-100">
+            <h2 class="text-lg font-semibold text-b2sBurgundy mb-3">Accès Membre B2S</h2>
+            <p class="text-sm text-slate-600 mb-4">Veuillez sélectionner ou saisir votre nom dans la liste officielle pour participer ou modifier votre réponse :</p>
             
-            <!-- Dashboard -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div class="bg-white rounded-xl shadow-md p-5 border-l-4 border-green-500 flex flex-col justify-center">
-                    <p class="text-sm text-gray-500 font-semibold uppercase">Total Repas Prévus</p>
-                    <div class="flex items-end gap-2 mt-1">
-                        <span id="stat-total-meals" class="text-4xl font-bold text-gray-800">0</span>
-                        <span class="text-sm text-gray-500 mb-1">personnes</span>
+            <div class="flex flex-col sm:flex-row gap-3">
+                <select id="member-select" class="flex-grow p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-b2sRose focus:outline-none">
+                    <option value="">-- Sélectionnez votre nom --</option>
+                    <!-- Liste des membres modifiable -->
+                    <option value="Jean Dupont">Jean Dupont</option>
+                    <option value="Marie Martin">Marie Martin</option>
+                    <option value="Pierre Durand">Pierre Durand</option>
+                    <option value="Sophie Bernard">Sophie Bernard</option>
+                    <option value="Thomas Leroy">Thomas Leroy</option>
+                </select>
+                <button onclick="checkMember()" class="bg-b2sBurgundy text-white px-6 py-3 rounded-lg font-medium hover:bg-b2sDark transition-colors">
+                    Valider mon accès
+                </button>
+            </div>
+            <p id="auth-error" class="text-red-500 text-sm mt-2 hidden">Nom non reconnu dans la liste des membres de l'association.</p>
+        </section>
+
+        <!-- Étape 2 : Formulaire de Réponse (Masqué par défaut) -->
+        <section id="form-section" class="bg-white rounded-xl shadow-md p-6 mb-8 border border-slate-100 hidden">
+            <div class="flex justify-between items-center mb-6 pb-3 border-b border-slate-100">
+                <h2 id="welcome-member" class="text-xl font-bold text-b2sBurgundy"></h2>
+                <button onclick="logout()" class="text-sm text-slate-500 hover:text-b2sBurgundy underline">Changer d'utilisateur</button>
+            </div>
+
+            <form id="rsvp-form" onsubmit="submitRsvp(event)" class="space-y-6">
+                <!-- Présence -->
+                <div>
+                    <label class="block font-medium text-slate-700 mb-2">Serez-vous présent(e) ? *</label>
+                    <div class="flex gap-6">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="attendance" value="Présent" required onclick="toggleGuests(true)" class="text-b2sRose focus:ring-b2sRose">
+                            <span class="font-medium text-green-700">Présent(e)</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="attendance" value="Absent" required onclick="toggleGuests(false)" class="text-b2sRose focus:ring-b2sRose">
+                            <span class="font-medium text-red-600">Absent(e)</span>
+                        </label>
                     </div>
                 </div>
-                <div class="bg-white rounded-xl shadow-md p-5 border-l-4 border-blue-500 flex flex-col justify-center">
-                    <p class="text-sm text-gray-500 font-semibold uppercase">Membres Présents</p>
-                    <div class="flex items-end gap-2 mt-1">
-                        <span id="stat-members-present" class="text-4xl font-bold text-gray-800">0</span>
-                        <span class="text-sm text-gray-500 mb-1">membres</span>
+
+                <!-- Invités (Affiché si Présent) -->
+                <div id="guests-container" class="space-y-4 p-4 bg-slate-50 rounded-lg border border-slate-200 hidden">
+                    <label class="flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" id="has-guests" onchange="toggleGuestCount()" class="w-5 h-5 text-b2sRose rounded focus:ring-b2sRose">
+                        <span class="font-medium text-slate-700">Je suis accompagné(e) par des invité(e)s</span>
+                    </label>
+
+                    <div id="guest-count-box" class="hidden pl-6 pt-2">
+                        <label class="block text-sm font-medium text-slate-600 mb-1">Nombre d'invité(e)(s) supplémentaire(s) :</label>
+                        <input type="number" id="guest-number" min="1" max="10" value="1" class="w-32 p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-b2sRose focus:outline-none">
+                        <p class="text-xs text-slate-500 mt-1">Tarif : Facturation du repas en plus par personne invitée.</p>
                     </div>
                 </div>
-                <div class="bg-white rounded-xl shadow-md p-5 border-l-4 border-red-500 flex flex-col justify-center">
-                    <p class="text-sm text-gray-500 font-semibold uppercase">Membres Absents</p>
-                    <div class="flex items-end gap-2 mt-1">
-                        <span id="stat-members-absent" class="text-4xl font-bold text-gray-800">0</span>
-                        <span class="text-sm text-gray-500 mb-1">membres</span>
+
+                <!-- Champ libre Commentaires -->
+                <div>
+                    <label for="comment" class="block font-medium text-slate-700 mb-2">Commentaires / Régimes alimentaires / Remarques :</label>
+                    <textarea id="comment" rows="3" placeholder="Laissez un commentaire ici..." class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-b2sRose focus:outline-none"></textarea>
+                </div>
+
+                <button type="submit" class="w-full bg-b2sRose text-white py-3 rounded-lg font-semibold hover:bg-pink-700 transition-colors shadow-sm">
+                    Enregistrer ma réponse
+                </button>
+            </form>
+        </section>
+
+        <!-- Tableau de Bord Organisateur & Liste Publique -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <!-- Statistiques Organisateurs -->
+            <div class="bg-white rounded-xl shadow-md p-6 border border-slate-100 md:col-span-1 flex flex-col justify-between">
+                <div>
+                    <h3 class="text-md font-bold text-b2sBurgundy mb-4 pb-2 border-b border-slate-100">📊 Suivi Organisateurs</h3>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex justify-between items-center bg-green-50 p-3 rounded-lg">
+                            <span class="text-green-800 font-medium">Présents (Membres) :</span>
+                            <span id="stat-presents" class="font-bold text-green-700 text-lg">0</span>
+                        </div>
+                        <div class="flex justify-between items-center bg-pink-50 p-3 rounded-lg">
+                            <span class="text-b2sRose font-medium">Invités cumulés :</span>
+                            <span id="stat-guests" class="font-bold text-b2sRose text-lg">0</span>
+                        </div>
+                        <div class="flex justify-between items-center bg-indigo-50 p-3 rounded-lg">
+                            <span class="text-indigo-800 font-bold">Total Repas à commander :</span>
+                            <span id="stat-total-repas" class="font-extrabold text-indigo-700 text-xl">0</span>
+                        </div>
+                        <div class="flex justify-between items-center bg-red-50 p-3 rounded-lg">
+                            <span class="text-red-700 font-medium">Absents :</span>
+                            <span id="stat-absents" class="font-bold text-red-600 text-lg">0</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Liste des inscrits -->
-            <div class="glass-panel rounded-2xl shadow-lg border border-gray-100 overflow-hidden flex flex-col" style="max-height: 600px;">
-                <div class="p-5 border-b border-gray-100 bg-white flex justify-between items-center">
-                    <h2 class="text-xl font-bold text-b2s-bordeaux flex items-center gap-2">
-                        <svg class="w-5 h-5 text-b2s-pink" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                        Liste des réponses en direct
-                    </h2>
-                    <span class="relative flex h-3 w-3">
-                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                      <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
-                    </span>
-                </div>
-                
-                <div class="table-container overflow-x-auto flex-grow bg-white">
-                    <table class="w-full text-left border-collapse min-w-[600px]">
+            <!-- Liste Publique des Réponses -->
+            <div class="bg-white rounded-xl shadow-md p-6 border border-slate-100 md:col-span-2">
+                <h3 class="text-md font-bold text-b2sBurgundy mb-4 pb-2 border-b border-slate-100">👥 Participants inscrits</h3>
+                <div class="overflow-x-auto max-h-80 overflow-y-auto">
+                    <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr class="bg-gray-50 text-gray-600 text-sm uppercase tracking-wider border-b border-gray-200">
-                                <th class="py-3 px-4 font-semibold">Membre</th>
-                                <th class="py-3 px-4 font-semibold text-center">Statut</th>
-                                <th class="py-3 px-4 font-semibold text-center">Invités</th>
-                                <th class="py-3 px-4 font-semibold">Commentaires</th>
+                            <tr class="text-xs uppercase text-slate-500 bg-slate-100 sticky top-0">
+                                <th class="p-3">Membre</th>
+                                <th class="p-3">Statut</th>
+                                <th class="p-3">Invités</th>
+                                <th class="p-3">Commentaire</th>
                             </tr>
                         </thead>
-                        <tbody id="responses-list" class="divide-y divide-gray-100">
-                            <!-- Injected via JS -->
+                        <tbody id="responses-table-body" class="text-sm divide-y divide-slate-100">
                             <tr>
-                                <td colspan="4" class="py-8 text-center text-gray-500 italic">
-                                    Chargement des données en temps réel...
-                                </td>
+                                <td colspan="4" class="p-4 text-center text-slate-400 italic">Aucune réponse enregistrée pour le moment.</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
+
     </main>
 
-    <!-- Custom Modal -->
-    <div id="custom-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-50 p-4">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 text-center transform transition-all">
-            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-            </div>
-            <h3 class="text-xl font-bold text-gray-900 mb-2">Enregistré !</h3>
-            <p class="text-gray-600 mb-6">Votre réponse a bien été prise en compte et partagée avec l'association.</p>
-            <button onclick="closeModal()" class="w-full bg-b2s-bordeaux hover:bg-gray-900 text-white font-bold py-2 px-4 rounded-lg transition-colors">
-                Fermer
-            </button>
-        </div>
-    </div>
+    <!-- Pied de page -->
+    <footer class="bg-b2sDark text-white py-4 text-center text-xs">
+        <p>&copy; 2026 B2S Saint-Malo - Tous droits réservés.</p>
+    </footer>
 
+    <!-- Script JavaScript -->
     <script>
-        // 1. Calcul de la date du repas
-        function calculateNextEventDate() {
-            const today = new Date();
-            let year = today.getFullYear();
-            let month = today.getMonth();
-
-            function getLastFriday(y, m) {
-                let lastDay = new Date(y, m + 1, 0); // Last day of month
-                let offset = (lastDay.getDay() - 5 + 7) % 7; // 5 is Friday
-                let lastFriday = new Date(y, m, lastDay.getDate() - offset);
-                lastFriday.setHours(12, 0, 0, 0);
-                return lastFriday;
-            }
-
-            let nextEvent = getLastFriday(year, month);
-
-            // Si la date est déjà passée, on prend le mois suivant
-            if (today > nextEvent) {
-                nextEvent = getLastFriday(year, month + 1);
-            }
-
-            const options = { weekday: 'long', day: 'numeric', month: 'long' };
-            let dateStr = nextEvent.toLocaleDateString('fr-FR', options);
-            dateStr = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
+        // Calcul automatique du dernier vendredi du mois en cours à 12h00
+        function getNextEventDate() {
+            const now = new Date();
+            let year = now.getFullYear();
+            let month = now.getMonth();
             
-            document.getElementById('next-date-display').textContent = `${dateStr} à 12h00`;
+            // Trouver le dernier jour du mois en cours
+            let lastDay = new Date(year, month + 1, 0);
+            // Reculer pour trouver le dernier vendredi
+            let dayOfWeek = lastDay.getDay();
+            let diff = (dayOfWeek + 2) % 7; 
+            let lastFridayDate = new Date(year, month, lastDay.getDate() - diff);
+            
+            // Si le dernier vendredi du mois est déjà passé, passer au mois suivant
+            if (now > lastFridayDate) {
+                month++;
+                if (month > 11) { month = 0; year++; }
+                lastDay = new Date(year, month + 1, 0);
+                dayOfWeek = lastDay.getDay();
+                diff = (dayOfWeek + 2) % 7;
+                lastFridayDate = new Date(year, month, lastDay.getDate() - diff);
+            }
+
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const dateStr = lastFridayDate.toLocaleDateString('fr-FR', options);
+            return `Repas du ${dateStr} à 12h00`;
         }
 
-        // Fonctions globales pour l'interface
-        window.toggleGuests = function(show) {
-            const guestSec = document.getElementById('guests-section');
-            if (show) {
-                guestSec.classList.remove('hidden');
-                guestSec.classList.add('block');
-            } else {
-                guestSec.classList.add('hidden');
-                guestSec.classList.remove('block');
-                document.getElementById('guestsCount').value = 0;
-            }
-        };
+        document.getElementById('event-date').innerText = getNextEventDate();
 
-        window.updateGuestCount = function(change) {
-            const input = document.getElementById('guestsCount');
-            let val = parseInt(input.value) || 0;
-            val += change;
-            if (val < 0) val = 0;
-            input.value = val;
-        };
+        let currentMember = "";
 
-        window.showModal = function() {
-            const modal = document.getElementById('custom-modal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            modal.children[0].classList.add('modal-enter-active');
-        };
-
-        window.closeModal = function() {
-            const modal = document.getElementById('custom-modal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        };
-
-        // Initialisation de l'application
-        function initApp() {
-            calculateNextEventDate();
-            renderData();
-            setupFormSubmit();
-
-            // Écoute les changements depuis d'autres onglets pour simuler le temps réel
-            window.addEventListener('storage', (e) => {
-                if (e.key === 'b2s_rsvps') {
-                    renderData();
-                }
-            });
+        // Charger les réponses stockées (LocalStorage pour test / navigateur)
+        function getStoredResponses() {
+            const data = localStorage.getItem('b2s_repas_responses');
+            return data ? JSON.parse(data) : {};
         }
 
-        function renderData() {
-            const tbody = document.getElementById('responses-list');
-            tbody.innerHTML = '';
-            
-            let stats = {
-                totalMeals: 0,
-                membersPresent: 0,
-                membersAbsent: 0
-            };
+        function saveStoredResponses(responses) {
+            localStorage.setItem('b2s_repas_responses', JSON.stringify(responses));
+            updateDashboard();
+        }
 
-            const rawData = localStorage.getItem('b2s_rsvps');
-            const docs = rawData ? JSON.parse(rawData) : [];
+        // Vérification du membre dans la liste officielle
+        function checkMember() {
+            const select = document.getElementById('member-select');
+            const error = document.getElementById('auth-error');
+            const memberName = select.value;
 
-            if (docs.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="py-8 text-center text-gray-500">Aucune réponse pour le moment. Soyez le premier !</td></tr>`;
-                updateDashboard(stats);
+            if (!memberName) {
+                error.classList.remove('hidden');
                 return;
             }
 
-            // Trier par date (le plus récent en premier)
-            docs.sort((a, b) => b.timestamp - a.timestamp);
+            error.classList.add('hidden');
+            currentMember = memberName;
 
-            docs.forEach(data => {
-                // Mise à jour des statistiques
-                if (data.presence) {
-                    stats.membersPresent++;
-                    stats.totalMeals += (1 + data.guests);
-                } else {
-                    stats.membersAbsent++;
+            // Afficher le formulaire et masquer l'authentification
+            document.getElementById('auth-section').classList.add('hidden');
+            document.getElementById('form-section').classList.remove('hidden');
+            document.getElementById('welcome-member').innerText = `Bonjour, ${currentMember}`;
+
+            // Pré-remplir si le membre a déjà répondu
+            const responses = getStoredResponses();
+            if (responses[currentMember]) {
+                const resp = responses[currentMember];
+                document.querySelector(`input[name="attendance"][value="${resp.attendance}"]`).checked = true;
+                toggleGuests(resp.attendance === 'Présent');
+                
+                if (resp.hasGuests) {
+                    document.getElementById('has-guests').checked = true;
+                    toggleGuestCount();
+                    document.getElementById('guest-number').value = resp.guestNumber;
                 }
-
-                // Création de la ligne du tableau
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-gray-50 transition-colors";
-                
-                const statusHtml = data.presence 
-                    ? `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Présent</span>`
-                    : `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">Absent</span>`;
-                
-                const guestsHtml = data.presence && data.guests > 0 
-                    ? `<span class="font-semibold text-b2s-pink">+${data.guests}</span>` 
-                    : `<span class="text-gray-400">-</span>`;
-
-                tr.innerHTML = `
-                    <td class="py-3 px-4 font-medium text-gray-900">${escapeHtml(data.name)}</td>
-                    <td class="py-3 px-4 text-center">${statusHtml}</td>
-                    <td class="py-3 px-4 text-center">${guestsHtml}</td>
-                    <td class="py-3 px-4 text-gray-600 text-sm max-w-xs truncate" title="${escapeHtml(data.comments || '')}">${escapeHtml(data.comments || '')}</td>
-                `;
-                tbody.appendChild(tr);
-            });
-
-            updateDashboard(stats);
+                document.getElementById('comment').value = resp.comment || '';
+            } else {
+                document.getElementById('rsvp-form').reset();
+                document.getElementById('guests-container').classList.add('hidden');
+            }
         }
 
-        function setupFormSubmit() {
-            const form = document.getElementById('rsvp-form');
-            form.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const btn = document.getElementById('submit-btn');
-                const originalText = btn.innerHTML;
-                
-                // Animation de chargement
-                btn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-5 w-5 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Enregistrement...`;
-                btn.disabled = true;
+        function logout() {
+            currentMember = "";
+            document.getElementById('form-section').classList.add('hidden');
+            document.getElementById('auth-section').classList.remove('hidden');
+            document.getElementById('member-select').value = "";
+        }
 
-                // Simulation d'un léger délai réseau
-                setTimeout(() => {
-                    try {
-                        const name = document.getElementById('memberName').value.trim();
-                        const isPresent = document.querySelector('input[name="presence"]:checked').value === 'yes';
-                        const guests = isPresent ? parseInt(document.getElementById('guestsCount').value) : 0;
-                        const comments = document.getElementById('comments').value.trim();
+        function toggleGuests(isPresent) {
+            const container = document.getElementById('guests-container');
+            if (isPresent) {
+                container.classList.remove('hidden');
+            } else {
+                container.classList.add('hidden');
+                document.getElementById('has-guests').checked = false;
+                toggleGuestCount();
+            }
+        }
 
-                        const newData = {
-                            name: name,
-                            presence: isPresent,
-                            guests: guests,
-                            comments: comments,
-                            timestamp: Date.now()
-                        };
+        function toggleGuestCount() {
+            const isChecked = document.getElementById('has-guests').checked;
+            const countBox = document.getElementById('guest-count-box');
+            if (isChecked) {
+                countBox.classList.remove('hidden');
+            } else {
+                countBox.classList.add('hidden');
+                document.getElementById('guest-number').value = "1";
+            }
+        }
 
-                        const rawData = localStorage.getItem('b2s_rsvps');
-                        let docs = rawData ? JSON.parse(rawData) : [];
-                        
-                        // Met à jour si le membre existe déjà, sinon ajoute
-                        const existingIndex = docs.findIndex(d => d.name.toLowerCase() === name.toLowerCase());
-                        if (existingIndex >= 0) {
-                            docs[existingIndex] = newData;
-                        } else {
-                            docs.push(newData);
-                        }
+        // Enregistrement de la réponse
+        function submitRsvp(event) {
+            event.preventDefault();
+            const attendance = document.querySelector('input[name="attendance"]:checked').value;
+            const hasGuests = document.getElementById('has-guests').checked;
+            const guestNumber = hasGuests ? parseInt(document.getElementById('guest-number').value) || 0 : 0;
+            const comment = document.getElementById('comment').value.trim();
 
-                        // Sauvegarde dans le navigateur
-                        localStorage.setItem('b2s_rsvps', JSON.stringify(docs));
+            const responses = getStoredResponses();
+            responses[currentMember] = {
+                attendance,
+                hasGuests,
+                guestNumber: attendance === 'Présent' && hasGuests ? guestNumber : 0,
+                comment,
+                updatedAt: new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'})
+            };
 
-                        form.reset();
-                        toggleGuests(false); 
-                        showModal();
-                        
-                        // Mise à jour immédiate de l'interface
-                        renderData();
+            saveStoredResponses(responses);
+            alert("Votre réponse a bien été enregistrée !");
+            logout();
+        }
 
-                    } catch (error) {
-                        console.error("Erreur de sauvegarde: ", error);
-                        alert("Une erreur est survenue lors de l'enregistrement.");
-                    } finally {
-                        btn.innerHTML = originalText;
-                        btn.disabled = false;
+        // Mise à jour en temps réel du tableau de bord et de la liste
+        function updateDashboard() {
+            const responses = getStoredResponses();
+            const tbody = document.getElementById('responses-table-body');
+            tbody.innerHTML = '';
+
+            let presentsCount = 0;
+            let guestsCount = 0;
+            let absentsCount = 0;
+
+            const members = Object.keys(responses);
+
+            if (members.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400 italic">Aucune réponse enregistrée pour le moment.</td></tr>`;
+            } else {
+                members.forEach(member => {
+                    const data = responses[member];
+                    if (data.attendance === 'Présent') {
+                        presentsCount++;
+                        guestsCount += data.guestNumber;
+                    } else {
+                        absentsCount++;
                     }
-                }, 400);
-            });
+
+                    const badgeColor = data.attendance === 'Présent' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
+                    const guestText = data.guestNumber >  0 ? `+ ${data.guestNumber} invité(e)(s)` : 'Aucun';
+
+                    const row = `
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-3 font-medium text-slate-800">${member}</td>
+                            <td class="p-3"><span class="px-2.5 py-1 rounded-full text-xs font-semibold ${badgeColor}">${data.attendance}</span></td>
+                            <td class="p-3 text-slate-600">${guestText}</td>
+                            <td class="p-3 text-slate-500 italic text-xs">${data.comment || '-'}</td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += row;
+                });
+            }
+
+            // Mise à jour des compteurs organisateurs
+            document.getElementById('stat-presents').innerText = presentsCount;
+            document.getElementById('stat-guests').innerText = guestsCount;
+            document.getElementById('stat-total-repas').innerText = presentsCount + guestsCount;
+            document.getElementById('stat-absents').innerText = absentsCount;
         }
 
-        function updateDashboard(stats) {
-            document.getElementById('stat-total-meals').textContent = stats.totalMeals;
-            document.getElementById('stat-members-present').textContent = stats.membersPresent;
-            document.getElementById('stat-members-absent').textContent = stats.membersAbsent;
-        }
-
-        function escapeHtml(unsafe) {
-            return unsafe
-                 .replace(/&/g, "&amp;")
-                 .replace(/</g, "&lt;")
-                 .replace(/>/g, "&gt;")
-                 .replace(/"/g, "&quot;")
-                 .replace(/'/g, "&#039;");
-        }
-
-        // Lancement de l'application
-        window.addEventListener('DOMContentLoaded', initApp);
+        // Lancer la mise à jour initiale au chargement de la page
+        updateDashboard();
     </script>
 </body>
 </html>
