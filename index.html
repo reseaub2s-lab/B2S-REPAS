@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -22,13 +23,26 @@
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between">
 
-    <!-- En-tête avec Logo -->
+    <!-- En-tête avec les deux logos -->
     <header class="bg-b2sBurgundy text-white shadow-md py-6 px-4">
-        <div class="max-w-4xl mx-auto flex flex-col items-center text-center">
-            <!-- Logo d'origine agrandi sans perte de qualité -->
-            <img src="NEW LOGO B2S.jpg" alt="Logo B2S Saint-Malo" class="h-32 sm:h-48 md:h-56 object-contain mb-4 rounded shadow-sm" onerror="this.onerror=null; this.src='https://via.placeholder.com/300x100/4A1525/FFFFFF?text=B2S+SAINT-MALO';">
-            <h1 class="text-xl sm:text-2xl font-bold tracking-wide">Repas Mensuel des Membres</h1>
-            <p id="event-date" class="text-b2sRose font-medium mt-1 text-lg"></p>
+        <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+            
+            <!-- Logo de gauche : rhumlogo.png -->
+            <div class="flex-shrink-0">
+                <img src="rhumlogo.png" alt="Logo Rhum" class="h-24 sm:h-32 md:h-40 object-contain rounded shadow-sm bg-white/10 p-1" onerror="this.onerror=null; this.src='https://via.placeholder.com/150x150/4A1525/FFFFFF?text=Rhum';">
+            </div>
+
+            <!-- Titre et Date au centre -->
+            <div class="flex-grow flex flex-col items-center sm:items-center">
+                <h1 class="text-xl sm:text-2xl font-bold tracking-wide">Repas Mensuel des Membres</h1>
+                <p id="event-date" class="text-b2sRose font-medium mt-1 text-lg"></p>
+            </div>
+
+            <!-- Logo de droite : NEW LOGO B2S.jpg -->
+            <div class="flex-shrink-0">
+                <img src="NEW LOGO B2S.jpg" alt="Logo B2S Saint-Malo" class="h-24 sm:h-32 md:h-40 object-contain rounded shadow-sm bg-white/10 p-1" onerror="this.onerror=null; this.src='https://via.placeholder.com/150x150/4A1525/FFFFFF?text=B2S';">
+            </div>
+
         </div>
     </header>
 
@@ -238,7 +252,6 @@
             document.getElementById('form-section').classList.remove('hidden');
             document.getElementById('welcome-member').innerText = `Bonjour, ${currentMember}`;
 
-            // Charger automatiquement les choix précédents de l'utilisateur s'il en a fait
             const responses = getStoredResponses();
             if (responses[currentMember]) {
                 const resp = responses[currentMember];
@@ -291,72 +304,4 @@
         }
 
         function submitRsvp(event) {
-            event.preventDefault();
-            const attendance = document.querySelector('input[name="attendance"]:checked').value;
-            const hasGuests = document.getElementById('has-guests').checked;
-            const guestNumber = hasGuests ? parseInt(document.getElementById('guest-number').value) || 0 : 0;
-            const comment = document.getElementById('comment').value.trim();
-
-            const responses = getStoredResponses();
-            // Mise à jour (ou création) des données pour ce membre précis
-            responses[currentMember] = {
-                attendance,
-                hasGuests,
-                guestNumber: attendance === 'Présent' && hasGuests ? guestNumber : 0,
-                comment,
-                updatedAt: new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'})
-            };
-
-            saveStoredResponses(responses);
-            alert("Vos modifications ont bien été enregistrées !");
-            logout();
-        }
-
-        function updateDashboard() {
-            const responses = getStoredResponses();
-            const tbody = document.getElementById('responses-table-body');
-            tbody.innerHTML = '';
-
-            let presentsCount = 0;
-            let guestsCount = 0;
-            let absentsCount = 0;
-
-            const members = Object.keys(responses);
-
-            if (members.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400 italic">Aucune réponse enregistrée pour le moment.</td></tr>`;
-            } else {
-                members.forEach(member => {
-                    const data = responses[member];
-                    if (data.attendance === 'Présent') {
-                        presentsCount++;
-                        guestsCount += data.guestNumber;
-                    } else {
-                        absentsCount++;
-                    }
-
-                    const badgeColor = data.attendance === 'Présent' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
-                    const guestText = data.guestNumber > 0 ? `+ ${data.guestNumber} invité(e)(s)` : 'Aucun';
-
-                    const row = `
-                        <tr class="hover:bg-slate-50">
-                            <td class="p-3 font-medium text-slate-800">${member}</td>
-                            <td class="p-3"><span class="px-2.5 py-1 rounded-full text-xs font-semibold ${badgeColor}">${data.attendance}</span></td>
-                            <td class="p-3 text-slate-600">${guestText}</td>
-                            <td class="p-3 text-slate-500 italic text-xs">${data.comment || '-'}</td>
-                        </tr>
-                    `;
-                    tbody.innerHTML += row;
-                });
-            }
-
-            document.getElementById('stat-presents').innerText = presentsCount;
-            document.getElementById('stat-guests').innerText = guestsCount;
-            document.getElementById('stat-total-repas').innerText = presentsCount + guestsCount;
-            document.getElementById('stat-absents').innerText = absentsCount;
-        }
-
-        updateDashboard();
-    </script>
-</body>
-</html>
+            event.preventDefault
