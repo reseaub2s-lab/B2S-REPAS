@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -44,19 +45,12 @@
                 <select id="member-select" class="flex-grow p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-b2sRose focus:outline-none">
                     <option value="">-- Sélectionnez votre nom --</option>
                     <!-- Liste des membres modifiable -->
-                    <option value="Thierry Anceaume">ANCEAUME Thierry</option>
-                    <option value="Thomas LE LONS">LE LONS Thomas</option>
-                    <option value="Franck Auzemery">AUZEMERY FRANCK</option>
-                    <option value="Yves Bouchard">BOUCHARD YVES</option>
-	            <option value="Jérémy Brault">BRAULT JEREMY</option>
-	            <option value="Vincent Brugaro">BRUGARO VINCENT</option>
-		    <option value="Mathieu Champsaur">CHAMPSAUR MATHIEU</option>
-		    <option value="Aurélie Cholet">CHOLET AURELIE</option>
-		    <option value="Quentin Ferdeau">FERDEAU QUENTIN</option>
-		    <option value="Frédéric Fontaine">FONTAINE FREDERIC</option>
-	            <option value="Jean-Charles Bouquet">BOUQUER JEAN CHARLES</option>
-		    <option value="Laurent Fouville">FOUVILLE LAURENT</option>
-		    <option value="Erwan Leroux">LEROUX ERWAN</option>
+                    <option value="Jean Dupont">Jean Dupont</option>
+                    <option value="Marie Martin">Marie Martin</option>
+                    <option value="Pierre Durand">Pierre Durand</option>
+                    <option value="Sophie Bernard">Sophie Bernard</option>
+                    <option value="Thomas Leroy">Thomas Leroy</option>
+                </select>
                 <button onclick="checkMember()" class="bg-b2sBurgundy text-white px-6 py-3 rounded-lg font-medium hover:bg-b2sDark transition-colors">
                     Valider mon accès
                 </button>
@@ -72,16 +66,16 @@
             </div>
 
             <form id="rsvp-form" onsubmit="submitRsvp(event)" class="space-y-6">
-                <!-- Présence -->
+                <!-- Présence forcée sur la même ligne -->
                 <div>
                     <label class="block font-medium text-slate-700 mb-2">Serez-vous présent(e) ? *</label>
-                    <div class="flex gap-6">
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="radio" name="attendance" value="Présent" required onclick="toggleGuests(true)" class="text-b2sRose focus:ring-b2sRose">
+                    <div class="flex flex-row items-center gap-8">
+                        <label class="flex items-center gap-2 cursor-pointer select-none">
+                            <input type="radio" name="attendance" value="Présent" required onclick="toggleGuests(true)" class="w-4 h-4 text-b2sRose focus:ring-b2sRose">
                             <span class="font-medium text-green-700">Présent(e)</span>
                         </label>
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="radio" name="attendance" value="Absent" required onclick="toggleGuests(false)" class="text-b2sRose focus:ring-b2sRose">
+                        <label class="flex items-center gap-2 cursor-pointer select-none">
+                            <input type="radio" name="attendance" value="Absent" required onclick="toggleGuests(false)" class="w-4 h-4 text-b2sRose focus:ring-b2sRose">
                             <span class="font-medium text-red-600">Absent(e)</span>
                         </label>
                     </div>
@@ -178,14 +172,11 @@
             let year = now.getFullYear();
             let month = now.getMonth();
             
-            // Trouver le dernier jour du mois en cours
             let lastDay = new Date(year, month + 1, 0);
-            // Reculer pour trouver le dernier vendredi
             let dayOfWeek = lastDay.getDay();
             let diff = (dayOfWeek + 2) % 7; 
             let lastFridayDate = new Date(year, month, lastDay.getDate() - diff);
             
-            // Si le dernier vendredi du mois est déjà passé, passer au mois suivant
             if (now > lastFridayDate) {
                 month++;
                 if (month > 11) { month = 0; year++; }
@@ -204,7 +195,6 @@
 
         let currentMember = "";
 
-        // Charger les réponses stockées (LocalStorage pour test / navigateur)
         function getStoredResponses() {
             const data = localStorage.getItem('b2s_repas_responses');
             return data ? JSON.parse(data) : {};
@@ -215,7 +205,6 @@
             updateDashboard();
         }
 
-        // Vérification du membre dans la liste officielle
         function checkMember() {
             const select = document.getElementById('member-select');
             const error = document.getElementById('auth-error');
@@ -229,12 +218,10 @@
             error.classList.add('hidden');
             currentMember = memberName;
 
-            // Afficher le formulaire et masquer l'authentification
             document.getElementById('auth-section').classList.add('hidden');
             document.getElementById('form-section').classList.remove('hidden');
             document.getElementById('welcome-member').innerText = `Bonjour, ${currentMember}`;
 
-            // Pré-remplir si le membre a déjà répondu
             const responses = getStoredResponses();
             if (responses[currentMember]) {
                 const resp = responses[currentMember];
@@ -282,7 +269,6 @@
             }
         }
 
-        // Enregistrement de la réponse
         function submitRsvp(event) {
             event.preventDefault();
             const attendance = document.querySelector('input[name="attendance"]:checked').value;
@@ -304,54 +290,10 @@
             logout();
         }
 
-        // Mise à jour en temps réel du tableau de bord et de la liste
         function updateDashboard() {
             const responses = getStoredResponses();
             const tbody = document.getElementById('responses-table-body');
             tbody.innerHTML = '';
 
             let presentsCount = 0;
-            let guestsCount = 0;
-            let absentsCount = 0;
-
-            const members = Object.keys(responses);
-
-            if (members.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400 italic">Aucune réponse enregistrée pour le moment.</td></tr>`;
-            } else {
-                members.forEach(member => {
-                    const data = responses[member];
-                    if (data.attendance === 'Présent') {
-                        presentsCount++;
-                        guestsCount += data.guestNumber;
-                    } else {
-                        absentsCount++;
-                    }
-
-                    const badgeColor = data.attendance === 'Présent' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
-                    const guestText = data.guestNumber >  0 ? `+ ${data.guestNumber} invité(e)(s)` : 'Aucun';
-
-                    const row = `
-                        <tr class="hover:bg-slate-50">
-                            <td class="p-3 font-medium text-slate-800">${member}</td>
-                            <td class="p-3"><span class="px-2.5 py-1 rounded-full text-xs font-semibold ${badgeColor}">${data.attendance}</span></td>
-                            <td class="p-3 text-slate-600">${guestText}</td>
-                            <td class="p-3 text-slate-500 italic text-xs">${data.comment || '-'}</td>
-                        </tr>
-                    `;
-                    tbody.innerHTML += row;
-                });
-            }
-
-            // Mise à jour des compteurs organisateurs
-            document.getElementById('stat-presents').innerText = presentsCount;
-            document.getElementById('stat-guests').innerText = guestsCount;
-            document.getElementById('stat-total-repas').innerText = presentsCount + guestsCount;
-            document.getElementById('stat-absents').innerText = absentsCount;
-        }
-
-        // Lancer la mise à jour initiale au chargement de la page
-        updateDashboard();
-    </script>
-</body>
-</html>
+            let guestsCount =
