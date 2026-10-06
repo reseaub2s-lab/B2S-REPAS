@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>B2S Saint-Malo - Inscription Repas Route du Rhum 2026</title>
+    <title>B2S Saint-Malo - Inscription Repas Mensuel</title>
     <!-- Tailwind CSS pour un design moderne et professionnel -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -22,13 +22,13 @@
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between">
 
-    <!-- En-tête avec les logos et les compteurs circulaires au centre -->
+    <!-- En-tête avec les grands logos et les compteurs circulaires au centre -->
     <header class="bg-b2sBurgundy text-white shadow-md py-6 px-4">
         <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-6">
             
-            <!-- Logo de gauche : rhumlogo.png -->
+            <!-- Logo de gauche agrandi : rhumlogo.png -->
             <div class="flex-shrink-0">
-                <img src="rhumlogo.png" alt="Logo Rhum" class="h-24 sm:h-32 object-contain rounded shadow-sm bg-white/10 p-1" onerror="this.onerror=null; this.src='https://via.placeholder.com/150x150/4A1525/FFFFFF?text=Rhum';">
+                <img src="rhumlogo.png" alt="Logo Route du Rhum" class="h-32 sm:h-44 md:h-52 object-contain rounded shadow-sm bg-white/10 p-1" onerror="this.onerror=null; this.src='https://via.placeholder.com/200x200/4A1525/FFFFFF?text=Rhum';">
             </div>
 
             <!-- Centre : Titre, Date et Compteurs en cercles -->
@@ -61,9 +61,9 @@
                 </div>
             </div>
 
-            <!-- Logo de droite : NEW LOGO B2S.jpg -->
+            <!-- Logo de droite agrandi : NEW LOGO B2S.jpg -->
             <div class="flex-shrink-0">
-                <img src="NEW LOGO B2S.jpg" alt="Logo B2S Saint-Malo" class="h-24 sm:h-32 object-contain rounded shadow-sm bg-white/10 p-1" onerror="this.onerror=null; this.src='https://via.placeholder.com/150x150/4A1525/FFFFFF?text=B2S';">
+                <img src="NEW LOGO B2S.jpg" alt="Logo B2S Saint-Malo" class="h-32 sm:h-44 md:h-52 object-contain rounded shadow-sm bg-white/10 p-1" onerror="this.onerror=null; this.src='https://via.placeholder.com/200x200/4A1525/FFFFFF?text=B2S';">
             </div>
 
         </div>
@@ -187,183 +187,3 @@
     <!-- Pied de page -->
     <footer class="bg-b2sDark text-white py-4 text-center text-xs">
         <p>&copy; 2026 B2S Saint-Malo - Tous droits réservés.</p>
-    </footer>
-
-    <!-- Script JavaScript -->
-    <script>
-        function getNextEventDate() {
-            const now = new Date();
-            let year = now.getFullYear();
-            let month = now.getMonth();
-            
-            let lastDay = new Date(year, month + 1, 0);
-            let dayOfWeek = lastDay.getDay();
-            let diff = (dayOfWeek + 2) % 7; 
-            let lastFridayDate = new Date(year, month, lastDay.getDate() - diff);
-            
-            if (now > lastFridayDate) {
-                month++;
-                if (month > 11) { month = 0; year++; }
-                lastDay = new Date(year, month + 1, 0);
-                dayOfWeek = lastDay.getDay();
-                diff = (dayOfWeek + 2) % 7;
-                lastFridayDate = new Date(year, month, lastDay.getDate() - diff);
-            }
-
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            const dateStr = lastFridayDate.toLocaleDateString('fr-FR', options);
-            return `Repas du ${dateStr} à 12h00`;
-        }
-
-        document.getElementById('event-date').innerText = getNextEventDate();
-
-        let currentMember = "";
-
-        function getStoredResponses() {
-            const data = localStorage.getItem('b2s_repas_responses');
-            return data ? JSON.parse(data) : {};
-        }
-
-        function saveStoredResponses(responses) {
-            localStorage.setItem('b2s_repas_responses', JSON.stringify(responses));
-            updateDashboard();
-        }
-
-        function checkMember() {
-            const select = document.getElementById('member-select');
-            const error = document.getElementById('auth-error');
-            const memberName = select.value;
-
-            if (!memberName) {
-                error.classList.remove('hidden');
-                return;
-            }
-
-            error.classList.add('hidden');
-            currentMember = memberName;
-
-            document.getElementById('auth-section').classList.add('hidden');
-            document.getElementById('form-section').classList.remove('hidden');
-            document.getElementById('welcome-member').innerText = `Bonjour, ${currentMember}`;
-
-            const responses = getStoredResponses();
-            if (responses[currentMember]) {
-                const resp = responses[currentMember];
-                document.querySelector(`input[name="attendance"][value="${resp.attendance}"]`).checked = true;
-                toggleGuests(resp.attendance === 'Présent');
-                
-                if (resp.hasGuests) {
-                    document.getElementById('has-guests').checked = true;
-                    toggleGuestCount();
-                    document.getElementById('guest-number').value = resp.guestNumber;
-                } else {
-                    document.getElementById('has-guests').checked = false;
-                    toggleGuestCount();
-                }
-                document.getElementById('comment').value = resp.comment || '';
-            } else {
-                document.getElementById('rsvp-form').reset();
-                document.getElementById('guests-container').classList.add('hidden');
-                document.getElementById('guest-count-box').classList.add('hidden');
-            }
-        }
-
-        function logout() {
-            currentMember = "";
-            document.getElementById('form-section').classList.add('hidden');
-            document.getElementById('auth-section').classList.remove('hidden');
-            document.getElementById('member-select').value = "";
-        }
-
-        function toggleGuests(isPresent) {
-            const container = document.getElementById('guests-container');
-            if (isPresent) {
-                container.classList.remove('hidden');
-            } else {
-                container.classList.add('hidden');
-                document.getElementById('has-guests').checked = false;
-                toggleGuestCount();
-            }
-        }
-
-        function toggleGuestCount() {
-            const isChecked = document.getElementById('has-guests').checked;
-            const countBox = document.getElementById('guest-count-box');
-            if (isChecked) {
-                countBox.classList.remove('hidden');
-            } else {
-                countBox.classList.add('hidden');
-                document.getElementById('guest-number').value = "1";
-            }
-        }
-
-        function submitRsvp(event) {
-            event.preventDefault();
-            const attendance = document.querySelector('input[name="attendance"]:checked').value;
-            const hasGuests = document.getElementById('has-guests').checked;
-            const guestNumber = hasGuests ? parseInt(document.getElementById('guest-number').value) || 0 : 0;
-            const comment = document.getElementById('comment').value.trim();
-
-            const responses = getStoredResponses();
-            responses[currentMember] = {
-                attendance,
-                hasGuests,
-                guestNumber: attendance === 'Présent' && hasGuests ? guestNumber : 0,
-                comment,
-                updatedAt: new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'})
-            };
-
-            saveStoredResponses(responses);
-            alert("Vos modifications ont bien été enregistrées !");
-            logout();
-        }
-
-        function updateDashboard() {
-            const responses = getStoredResponses();
-            const tbody = document.getElementById('responses-table-body');
-            tbody.innerHTML = '';
-
-            let presentsCount = 0;
-            let guestsCount = 0;
-            let absentsCount = 0;
-
-            const members = Object.keys(responses);
-
-            if (members.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400 italic">Aucune réponse enregistrée pour le moment.</td></tr>`;
-            } else {
-                members.forEach(member => {
-                    const data = responses[member];
-                    if (data.attendance === 'Présent') {
-                        presentsCount++;
-                        guestsCount += data.guestNumber;
-                    } else {
-                        absentsCount++;
-                    }
-
-                    const badgeColor = data.attendance === 'Présent' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
-                    const guestText = data.guestNumber > 0 ? `+ ${data.guestNumber} invité(e)(s)` : 'Aucun';
-
-                    const row = `
-                        <tr class="hover:bg-slate-50">
-                            <td class="p-3 font-medium text-slate-800">${member}</td>
-                            <td class="p-3"><span class="px-2.5 py-1 rounded-full text-xs font-semibold ${badgeColor}">${data.attendance}</span></td>
-                            <td class="p-3 text-slate-600">${guestText}</td>
-                            <td class="p-3 text-slate-500 italic text-xs">${data.comment || '-'}</td>
-                        </tr>
-                    `;
-                    tbody.innerHTML += row;
-                });
-            }
-
-            // Mise à jour des cercles compteurs dans l'en-tête
-            document.getElementById('stat-presents').innerText = presentsCount;
-            document.getElementById('stat-guests').innerText = guestsCount;
-            document.getElementById('stat-total-repas').innerText = presentsCount + guestsCount;
-            document.getElementById('stat-absents').innerText = absentsCount;
-        }
-
-        updateDashboard();
-    </script>
-</body>
-</html>
