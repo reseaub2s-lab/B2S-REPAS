@@ -227,7 +227,7 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        // Liste triée par NOM puis Prénom avec format NOM Prénom
+        // Liste des membres triée par NOM puis Prénom
         const ALL_MEMBERS = [
             "ANCEAUME Thierry",
             "AUZEMERY Franck",
@@ -258,7 +258,7 @@
         let currentMember = "";
         let globalResponses = {};
 
-        // Remplissage des menus déroulants
+        // Remplissage dynamique des sélecteurs
         function populateMemberSelects() {
             const userSelect = document.getElementById('user-select');
             const adminSelect = document.getElementById('admin-user-select');
@@ -286,7 +286,7 @@
             });
         }
 
-        // Changement de membre dans la liste déroulante
+        // Gestion de la sélection d'un membre
         window.onUserSelected = function(selectedMember) {
             currentMember = selectedMember;
             if (!currentMember) {
@@ -320,7 +320,7 @@
             }
         };
 
-        // Date événement
+        // Date de l'événement
         function getNextEventDate() {
             const now = new Date();
             let year = now.getFullYear();
@@ -345,8 +345,6 @@
             return `Repas du ${dateStr} à 20h00`;
         }
 
-        document.getElementById('event-date').innerText = getNextEventDate();
-
         // Firestore temps réel
         function initRealtimeListener() {
             onSnapshot(collection(db, "b2s_repas"), (snapshot) => {
@@ -357,7 +355,8 @@
                 updateDashboard();
                 checkUrlMember();
             }, (error) => {
-                console.error("Erreur de synchronisation Firestore : ", error);
+                console.error("Erreur Firestore : ", error);
+                updateDashboard(); // Affiche la liste même en cas de souci réseau
             });
         }
 
@@ -416,7 +415,6 @@
             updateDashboard();
         };
 
-        // Reset mot de passe utilisateur
         window.userRequestResetPassword = async function() {
             if (!currentMember) {
                 alert("Veuillez d'abord sélectionner votre nom dans le menu déroulant.");
@@ -437,7 +435,6 @@
             }
         };
 
-        // Reset mot de passe admin
         window.adminSendResetEmail = async function() {
             const selectedMember = document.getElementById('admin-user-select').value;
             if (!selectedMember) {
@@ -451,11 +448,11 @@
                     await sendPasswordResetEmail(auth, userDoc.data().email);
                     alert(`E-mail de réinitialisation envoyé avec succès à ${userDoc.data().email}.`);
                 } else {
-                    alert("Aucune adresse e-mail trouvée pour ce membre dans la base de données.");
+                    alert("Aucune adresse e-mail trouvée pour ce membre.");
                 }
             } catch (error) {
                 console.error("Erreur admin reset :", error);
-                alert("Erreur lors de l'envoi du mail de réinitialisation.");
+                alert("Erreur lors de l'envoi du mail.");
             }
         };
 
@@ -519,7 +516,7 @@
                 try {
                     await deleteDoc(doc(db, "b2s_repas", member));
                 } catch (e) {
-                    console.error("Erreur lors de la suppression : ", e);
+                    console.error("Erreur de suppression : ", e);
                 }
             }
         };
@@ -552,6 +549,7 @@
 
         function updateDashboard() {
             const tbody = document.getElementById('responses-table-body');
+            if (!tbody) return;
             tbody.innerHTML = '';
 
             let presentsCount = 0;
@@ -604,9 +602,15 @@
             document.getElementById('stat-absents').innerText = absentsCount;
         }
 
-        // Lancement au démarrage
-        populateMemberSelects();
-        initRealtimeListener();
+        // Exécution sécurisée après le chargement du DOM
+        document.addEventListener('DOMContentLoaded', () => {
+            const dateEl = document.getElementById('event-date');
+            if (dateEl) dateEl.innerText = getNextEventDate();
+            
+            populateMemberSelects();
+            updateDashboard();
+            initRealtimeListener();
+        });
     </script>
 </body>
 </html>
