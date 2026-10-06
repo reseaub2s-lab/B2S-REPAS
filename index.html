@@ -242,7 +242,7 @@
 
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
             const dateStr = lastFridayDate.toLocaleDateString('fr-FR', options);
-            return `Repas du ${dateStr} à 12h00`;
+            return `Repas du ${dateStr} à 20h00`;
         }
 
         document.getElementById('event-date').innerText = getNextEventDate();
