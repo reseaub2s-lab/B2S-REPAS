@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>B2S Saint-Malo - Inscription au repas de la Route du Rhum</title>
-    <!-- Tailwind CSS pour un design moderne et professionnel -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -22,46 +22,41 @@
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between">
 
-    <!-- En-tête responsive avec les grands logos et les compteurs circulaires au centre -->
+    <!-- En-tête responsive -->
     <header class="bg-b2sBurgundy text-white shadow-md py-4 sm:py-6 px-3 sm:px-4">
         <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-4 lg:gap-6">
             
-            <!-- Logo de gauche agrandi : rhumlogo.png -->
+            <!-- Logo de gauche -->
             <div class="flex-shrink-0">
                 <img src="rhumlogo.png" alt="Logo Route du Rhum" class="h-24 sm:h-36 md:h-44 lg:h-52 object-contain rounded shadow-sm bg-white/10 p-1" onerror="this.onerror=null; this.src='https://via.placeholder.com/200x200/4A1525/FFFFFF?text=Rhum';">
             </div>
 
-            <!-- Centre : Titre, Date et Compteurs en cercles (optimisés mobile) -->
+            <!-- Centre : Titre, Date et Compteurs -->
             <div class="flex-grow flex flex-col items-center text-center w-full">
                 <h1 class="text-lg sm:text-xl md:text-2xl font-bold tracking-wide">Repas Mensuel des Membres</h1>
                 <p id="event-date" class="text-b2sRose font-medium mt-1 text-sm sm:text-base md:text-lg mb-3 sm:mb-4"></p>
                 
-                <!-- Les 4 compteurs en cercles -->
                 <div class="grid grid-cols-4 gap-2 sm:gap-4 w-full max-w-md justify-items-center">
-                    <!-- Cercle Présents -->
-                    <div class="flex flex-col items-center bg-white/10 backdrop-blur-sm border border-white/20 rounded-full w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 justify-center shadow-inner">
+                    <div class="flex flex-col items-center bg-white/15 backdrop-blur-sm border border-white/20 rounded-full w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 justify-center shadow-inner">
                         <span id="stat-presents" class="text-base sm:text-xl md:text-2xl font-extrabold text-green-300">0</span>
                         <span class="text-[9px] sm:text-[11px] md:text-xs uppercase tracking-wider text-slate-200">Présents</span>
                     </div>
-                    <!-- Cercle Invités -->
-                    <div class="flex flex-col items-center bg-white/10 backdrop-blur-sm border border-white/20 rounded-full w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 justify-center shadow-inner">
+                    <div class="flex flex-col items-center bg-white/15 backdrop-blur-sm border border-white/20 rounded-full w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 justify-center shadow-inner">
                         <span id="stat-guests" class="text-base sm:text-xl md:text-2xl font-extrabold text-pink-300">0</span>
                         <span class="text-[9px] sm:text-[11px] md:text-xs uppercase tracking-wider text-slate-200">Invités</span>
                     </div>
-                    <!-- Cercle Total Repas -->
                     <div class="flex flex-col items-center bg-b2sRose/40 backdrop-blur-sm border border-b2sRose rounded-full w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 justify-center shadow-lg">
                         <span id="stat-total-repas" class="text-base sm:text-xl md:text-2xl font-extrabold text-white">0</span>
                         <span class="text-[9px] sm:text-[11px] md:text-xs uppercase tracking-wider text-white font-semibold">Total</span>
                     </div>
-                    <!-- Cercle Absents -->
-                    <div class="flex flex-col items-center bg-white/10 backdrop-blur-sm border border-white/20 rounded-full w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 justify-center shadow-inner">
+                    <div class="flex flex-col items-center bg-white/15 backdrop-blur-sm border border-white/20 rounded-full w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 justify-center shadow-inner">
                         <span id="stat-absents" class="text-base sm:text-xl md:text-2xl font-extrabold text-red-300">0</span>
                         <span class="text-[9px] sm:text-[11px] md:text-xs uppercase tracking-wider text-slate-200">Absents</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Logo de droite agrandi : NEW LOGO B2S.jpg -->
+            <!-- Logo de droite -->
             <div class="flex-shrink-0">
                 <img src="NEW LOGO B2S.jpg" alt="Logo B2S Saint-Malo" class="h-24 sm:h-36 md:h-44 lg:h-52 object-contain rounded shadow-sm bg-white/10 p-1" onerror="this.onerror=null; this.src='https://via.placeholder.com/200x200/4A1525/FFFFFF?text=B2S';">
             </div>
@@ -72,53 +67,40 @@
     <!-- Contenu Principal -->
     <main class="max-w-4xl mx-auto px-3 sm:px-4 py-6 sm:py-8 w-full flex-grow">
 
-        <!-- Étape 1 : Identification du Membre -->
-        <section id="auth-section" class="bg-white rounded-xl shadow-md p-4 sm:p-6 mb-6 sm:mb-8 border border-slate-100">
-            <h2 class="text-base sm:text-lg font-semibold text-b2sBurgundy mb-2 sm:mb-3">Accès Membre B2S</h2>
-            <p class="text-xs sm:text-sm text-slate-600 mb-4">Veuillez sélectionner votre nom dans la liste officielle pour participer ou modifier votre réponse :</p>
-            
-            <div class="flex flex-col sm:flex-row gap-3">
-                <select id="member-select" class="flex-grow p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-b2sRose focus:outline-none text-sm sm:text-base">
-                    <option value="">-- Sélectionnez votre nom --</option>
-                    <option value="Thierry Anceaume">Thierry Anceaume</option>
-                    <option value="Thomas LE LONS">Thomas LE LONS</option>
-                    <option value="Franck Auzemery">Franck Auzemery</option>
-                    <option value="Yves Bouchard">Yves Bouchard</option>
-                    <option value="Jérémy Brault">Jérémy Brault</option>
-                    <option value="Vincent Brugaro">Vincent Brugaro</option>
-                    <option value="Mathieu Champsaur">Mathieu Champsaur</option>
-                    <option value="Aurélie Chollet Weyl">Aurélie Chollet Weyl</option>
-                    <option value="Quentin Ferdeau">Quentin Ferdeau</option>
-                    <option value="Frédéric Fontaine">Frédéric Fontaine</option>
-                    <option value="Jean-Charles Bouquet">Jean-Charles Bouquet</option>
-                    <option value="Laurent Fouville">Laurent Fouville</option>
-                    <option value="Erwan Leroux">Erwan Leroux</option>
-                    <option value="Hans Levillain">Hans Levillain</option>
-                    <option value="Romain Lesacher">Romain Lesacher</option>
-                    <option value="Sébastien MONMARCHE">Sébastien MONMARCHE</option>
-                    <option value="Christophe Rebeyrole">Christophe Rebeyrole</option>
-                    <option value="Laurent Husson">Laurent Husson</option>
-                    <option value="Marc Delaunay">Marc Delaunay</option>
-                    <option value="Thierry Taillandier">Thierry Taillandier</option>
-                    <option value="Xavier Lerede">Xavier Lerede</option>
-                    <option value="Yann Quebriac">Yann Quebriac</option>
-                </select>
-                <button onclick="checkMember()" class="bg-b2sBurgundy text-white px-6 py-3 rounded-lg font-medium hover:bg-b2sDark transition-colors text-sm sm:text-base">
-                    Valider mon accès
-                </button>
+        <!-- Espace Administrateur -->
+        <div class="flex justify-end mb-4">
+            <div id="admin-trigger-box">
+                <button onclick="toggleAdminLogin()" class="text-xs text-b2sRose hover:underline font-medium">🔑 Espace Administrateur</button>
             </div>
-            <p id="auth-error" class="text-red-500 text-sm mt-2 hidden">Veuillez sélectionner un nom valide dans la liste.</p>
-        </section>
+            <div id="admin-active-box" class="hidden flex items-center gap-3">
+                <span class="bg-b2sRose text-white text-xs px-2.5 py-1 rounded-full font-semibold">Mode Admin Actif</span>
+                <button onclick="exitAdmin()" class="bg-slate-200 text-slate-700 hover:bg-slate-300 text-xs px-3 py-1.5 rounded-lg font-medium transition-colors">Quitter Admin</button>
+            </div>
+        </div>
 
-        <!-- Étape 2 : Formulaire de Réponse (Masqué par défaut) -->
+        <!-- Formulaire de Connexion Admin -->
+        <div id="admin-login-box" class="bg-white rounded-xl shadow-md p-4 sm:p-6 mb-6 border border-slate-100 hidden">
+            <h2 class="text-base sm:text-lg font-semibold text-b2sBurgundy mb-3">Connexion Administrateur</h2>
+            <div class="flex flex-col gap-3">
+                <input type="password" id="admin-password" placeholder="Mot de passe administrateur" class="p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-b2sRose focus:outline-none text-sm sm:text-base">
+                <div class="flex gap-2">
+                    <button onclick="checkAdmin()" class="flex-grow bg-b2sRose text-white px-6 py-3 rounded-lg font-medium hover:bg-pink-700 transition-colors text-sm sm:text-base">
+                        Valider Admin
+                    </button>
+                    <button onclick="toggleAdminLogin()" class="bg-slate-200 text-slate-700 px-4 py-3 rounded-lg text-sm">Fermer</button>
+                </div>
+            </div>
+            <p id="admin-error" class="text-red-500 text-sm mt-2 hidden">Mot de passe incorrect.</p>
+        </div>
+
+        <!-- Formulaire de Réponse Individuel -->
         <section id="form-section" class="bg-white rounded-xl shadow-md p-4 sm:p-6 mb-6 sm:mb-8 border border-slate-100 hidden">
             <div class="flex justify-between items-center mb-4 sm:mb-6 pb-3 border-b border-slate-100">
                 <h2 id="welcome-member" class="text-lg sm:text-xl font-bold text-b2sBurgundy"></h2>
-                <button onclick="logout()" class="text-xs sm:text-sm text-slate-500 hover:text-b2sBurgundy underline">Changer d'utilisateur</button>
+                <a href="index.html" class="text-xs sm:text-sm text-slate-500 hover:text-b2sBurgundy underline">Voir la vue générale</a>
             </div>
 
             <form id="rsvp-form" onsubmit="submitRsvp(event)" class="space-y-6">
-                <!-- Présence -->
                 <div>
                     <label class="block font-medium text-slate-700 mb-2 text-sm sm:text-base">Serez-vous présent(e) ? *</label>
                     <div class="flex flex-row items-center gap-8">
@@ -133,7 +115,6 @@
                     </div>
                 </div>
 
-                <!-- Invités (Affiché si Présent) -->
                 <div id="guests-container" class="space-y-4 p-4 bg-slate-50 rounded-lg border border-slate-200 hidden">
                     <label class="flex items-center gap-3 cursor-pointer">
                         <input type="checkbox" id="has-guests" onchange="toggleGuestCount()" class="w-5 h-5 text-b2sRose rounded focus:ring-b2sRose">
@@ -147,22 +128,42 @@
                     </div>
                 </div>
 
-                <!-- Champ libre Commentaires -->
                 <div>
                     <label for="comment" class="block font-medium text-slate-700 mb-2 text-sm sm:text-base">Commentaires / Régimes alimentaires / Remarques :</label>
                     <textarea id="comment" rows="3" placeholder="Laissez un commentaire ici..." class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-b2sRose focus:outline-none text-sm sm:text-base"></textarea>
                 </div>
 
-                <button type="submit" class="w-full bg-b2sRose text-white py-3 rounded-lg font-semibold hover:bg-pink-700 transition-colors shadow-sm text-sm sm:text-base">
-                    Mettre à jour / Enregistrer ma réponse
-                </button>
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <button type="submit" class="flex-grow bg-b2sRose text-white py-3 rounded-lg font-semibold hover:bg-pink-700 transition-colors shadow-sm text-sm sm:text-base">
+                        Enregistrer / Mettre à jour ma réponse
+                    </button>
+                    <button type="button" onclick="resetToMyLink()" class="bg-slate-200 text-slate-700 px-4 py-3 rounded-lg font-medium hover:bg-slate-300 transition-colors text-sm">
+                        🔄 Réinitialiser
+                    </button>
+                </div>
             </form>
         </section>
 
-        <!-- Liste Publique des Réponses -->
+        <!-- Message d'accueil général -->
+        <div id="welcome-banner" class="bg-b2sBurgundy/5 border border-b2sBurgundy/20 rounded-xl p-4 sm:p-6 mb-6 text-center">
+            <h3 class="text-base sm:text-lg font-semibold text-b2sBurgundy mb-2">Bienvenue sur l'Espace Repas B2S Saint-Malo</h3>
+            <p class="text-xs sm:text-sm text-slate-600 mb-3">Consultez ci-dessous la liste de tous les membres, les présences et les commentaires synchronisés en direct.</p>
+            <p class="text-xs text-b2sRose font-medium">💡 Pour modifier votre choix, cliquez simplement sur votre lien URL personnel.</p>
+        </div>
+
+        <!-- Liste Publique de TOUS les Membres -->
         <div class="bg-white rounded-xl shadow-md p-4 sm:p-6 border border-slate-100 mb-8">
-            <h3 class="text-base sm:text-md font-bold text-b2sBurgundy mb-4 pb-2 border-b border-slate-100">👥 Participants inscrits</h3>
-            <div class="overflow-x-auto max-h-80 overflow-y-auto">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 pb-2 border-b border-slate-100 gap-3">
+                <h3 class="text-base sm:text-md font-bold text-b2sBurgundy">👥 Suivi des Inscriptions de tous les Membres</h3>
+                
+                <div id="admin-controls" class="hidden flex items-center gap-2">
+                    <button onclick="exportToCSV()" class="bg-emerald-600 text-white text-xs px-3 py-1.5 rounded-lg font-medium hover:bg-emerald-700 transition-colors flex items-center gap-1 shadow-sm">
+                        📥 Télécharger le récapitulatif (CSV)
+                    </button>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto max-h-[500px] overflow-y-auto">
                 <table class="w-full text-left border-collapse min-w-[500px]">
                     <thead>
                         <tr class="text-xs uppercase text-slate-500 bg-slate-100 sticky top-0">
@@ -170,12 +171,11 @@
                             <th class="p-3">Statut</th>
                             <th class="p-3">Invités</th>
                             <th class="p-3">Commentaire</th>
+                            <th id="th-actions" class="p-3 hidden">Actions Admin</th>
                         </tr>
                     </thead>
                     <tbody id="responses-table-body" class="text-sm divide-y divide-slate-100">
-                        <tr>
-                            <td colspan="4" class="p-4 text-center text-slate-400 italic">Aucune réponse enregistrée pour le moment.</td>
-                        </tr>
+                        <tr><td colspan="5" class="p-4 text-center text-slate-400 italic">Chargement des données en temps réel...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -188,8 +188,39 @@
         <p>&copy; 2026 B2S Saint-Malo - Tous droits réservés.</p>
     </footer>
 
-    <!-- Script JavaScript -->
-    <script>
+    <!-- Firebase SDK (Modular v10) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // TODO: Remplacez ces valeurs par votre propre configuration Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyCxVMelgvx7I1Q5sJ70xP4ActosaKBjNjo",
+            authDomain: "b2s-saint-malo.firebaseapp.com",
+            projectId: "b2s-saint-malo",
+            storageBucket: "b2s-saint-malo.firebasestorage.app",
+            messagingSenderId: "828867699068",
+            appId: "1:828867699068:web:6ddfcadf684b903ca484f9"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const ALL_MEMBERS = [
+            "Thierry Anceaume", "Thomas LE LONS", "Franck Auzemery", "Yves Bouchard", 
+            "Jérémy Brault", "Vincent Brugaro", "Mathieu Champsaur", "Aurélie Chollet Weyl", 
+            "Quentin Ferdeau", "Frédéric Fontaine", "Jean-Charles Bouquet", "Laurent Fouville", 
+            "Erwan Leroux", "Hans Levillain", "Romain Lesacher", "Sébastien MONMARCHE", 
+            "Christophe Rebeyrole", "Laurent Husson", "Marc Delaunay", "Thierry Taillandier", 
+            "Xavier Lerede", "Yann Quebriac"
+        ];
+
+        const ADMIN_PASSWORD = "admin2026"; 
+        let isAdmin = false;
+        let currentMember = "";
+        let globalResponses = {};
+
+        // Calcul automatique du prochain vendredi de fin de mois
         function getNextEventDate() {
             const now = new Date();
             let year = now.getFullYear();
@@ -216,67 +247,91 @@
 
         document.getElementById('event-date').innerText = getNextEventDate();
 
-        let currentMember = "";
-
-        function getStoredResponses() {
-            const data = localStorage.getItem('b2s_repas_responses');
-            return data ? JSON.parse(data) : {};
+        // Écoute en temps réel de Firestore
+        function initRealtimeListener() {
+            onSnapshot(collection(db, "b2s_repas"), (snapshot) => {
+                globalResponses = {};
+                snapshot.forEach((docSnap) => {
+                    globalResponses[docSnap.id] = docSnap.data();
+                });
+                updateDashboard();
+                checkUrlMember(); // Vérifie le membre après chargement des données existantes
+            }, (error) => {
+                console.error("Erreur de synchronisation Firestore : ", error);
+            });
         }
 
-        function saveStoredResponses(responses) {
-            localStorage.setItem('b2s_repas_responses', JSON.stringify(responses));
-            updateDashboard();
+        function checkUrlMember() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const memberParam = urlParams.get('membre');
+            
+            if (memberParam && ALL_MEMBERS.includes(memberParam)) {
+                currentMember = memberParam;
+                document.getElementById('form-section').classList.remove('hidden');
+                document.getElementById('welcome-banner').classList.add('hidden');
+                document.getElementById('welcome-member').innerText = `Espace personnel : ${currentMember}`;
+
+                if (globalResponses[currentMember]) {
+                    const resp = globalResponses[currentMember];
+                    const radio = document.querySelector(`input[name="attendance"][value="${resp.attendance}"]`);
+                    if (radio) {
+                        radio.checked = true;
+                        toggleGuests(resp.attendance === 'Présent');
+                    }
+                    if (resp.hasGuests) {
+                        document.getElementById('has-guests').checked = true;
+                        toggleGuestCount();
+                        document.getElementById('guest-number').value = resp.guestNumber;
+                    }
+                    document.getElementById('comment').value = resp.comment || '';
+                }
+            }
         }
 
-        function checkMember() {
-            const select = document.getElementById('member-select');
-            const error = document.getElementById('auth-error');
-            const memberName = select.value;
+        window.resetToMyLink = function() {
+            if (currentMember) {
+                window.location.href = `index.html?membre=${encodeURIComponent(currentMember)}`;
+            }
+        };
 
-            if (!memberName) {
+        window.toggleAdminLogin = function() {
+            const adminBox = document.getElementById('admin-login-box');
+            adminBox.classList.toggle('hidden');
+            document.getElementById('admin-error').classList.add('hidden');
+        };
+
+        window.checkAdmin = function() {
+            const adminPwdInput = document.getElementById('admin-password');
+            const error = document.getElementById('admin-error');
+            const password = adminPwdInput.value.trim();
+
+            if (password !== ADMIN_PASSWORD) {
                 error.classList.remove('hidden');
                 return;
             }
 
             error.classList.add('hidden');
-            currentMember = memberName;
+            isAdmin = true;
+            adminPwdInput.value = "";
 
-            // Masquer l'authentification et afficher le formulaire
-            document.getElementById('auth-section').classList.add('hidden');
-            document.getElementById('form-section').classList.remove('hidden');
-            document.getElementById('welcome-member').innerText = `Bonjour, ${currentMember}`;
+            document.getElementById('admin-login-box').classList.add('hidden');
+            document.getElementById('admin-trigger-box').classList.add('hidden');
+            document.getElementById('admin-active-box').classList.remove('hidden');
+            document.getElementById('admin-controls').classList.remove('hidden');
+            document.getElementById('th-actions').classList.remove('hidden');
+            updateDashboard();
+        };
 
-            // Réinitialiser le formulaire proprement
-            document.getElementById('rsvp-form').reset();
-            document.getElementById('guests-container').classList.add('hidden');
-            document.getElementById('guest-count-box').classList.add('hidden');
+        window.exitAdmin = function() {
+            isAdmin = false;
+            document.getElementById('admin-active-box').classList.add('hidden');
+            document.getElementById('admin-trigger-box').classList.remove('hidden');
+            document.getElementById('admin-controls').classList.add('hidden');
+            document.getElementById('th-actions').classList.add('hidden');
+            updateDashboard();
+        };
 
-            const responses = getStoredResponses();
-            if (responses[currentMember]) {
-                const resp = responses[currentMember];
-                const radio = document.querySelector(`input[name="attendance"][value="${resp.attendance}"]`);
-                if (radio) {
-                    radio.checked = true;
-                    toggleGuests(resp.attendance === 'Présent');
-                }
-                
-                if (resp.hasGuests) {
-                    document.getElementById('has-guests').checked = true;
-                    toggleGuestCount();
-                    document.getElementById('guest-number').value = resp.guestNumber;
-                }
-                document.getElementById('comment').value = resp.comment || '';
-            }
-        }
-
-        function logout() {
-            currentMember = "";
-            document.getElementById('form-section').classList.add('hidden');
-            document.getElementById('auth-section').classList.remove('hidden');
-            document.getElementById('member-select').value = "";
-        }
-
-        function toggleGuests(isPresent) {
+        window.toggleGuests = function(isPresent) {
             const container = document.getElementById('guests-container');
             if (isPresent) {
                 container.classList.remove('hidden');
@@ -285,9 +340,9 @@
                 document.getElementById('has-guests').checked = false;
                 toggleGuestCount();
             }
-        }
+        };
 
-        function toggleGuestCount() {
+        window.toggleGuestCount = function() {
             const isChecked = document.getElementById('has-guests').checked;
             const countBox = document.getElementById('guest-count-box');
             if (isChecked) {
@@ -296,9 +351,9 @@
                 countBox.classList.add('hidden');
                 document.getElementById('guest-number').value = "1";
             }
-        }
+        };
 
-        function submitRsvp(event) {
+        window.submitRsvp = async function(event) {
             event.preventDefault();
             const checkedRadio = document.querySelector('input[name="attendance"]:checked');
             if (!checkedRadio) return;
@@ -308,8 +363,7 @@
             const guestNumber = hasGuests ? parseInt(document.getElementById('guest-number').value) || 0 : 0;
             const comment = document.getElementById('comment').value.trim();
 
-            const responses = getStoredResponses();
-            responses[currentMember] = {
+            const payload = {
                 attendance,
                 hasGuests,
                 guestNumber: attendance === 'Présent' && hasGuests ? guestNumber : 0,
@@ -317,13 +371,53 @@
                 updatedAt: new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'})
             };
 
-            saveStoredResponses(responses);
-            alert("Vos modifications ont bien été enregistrées !");
-            logout();
-        }
+            try {
+                await setDoc(doc(db, "b2s_repas", currentMember), payload);
+                alert("Vos modifications ont bien été enregistrées en ligne !");
+                window.location.href = "index.html";
+            } catch (e) {
+                console.error("Erreur lors de l'enregistrement : ", e);
+                alert("Erreur lors de l'enregistrement. Vérifiez votre connexion.");
+            }
+        };
+
+        window.adminDeleteResponse = async function(member) {
+            if (confirm(`Voulez-vous vraiment supprimer la réponse de ${member} ?`)) {
+                try {
+                    await deleteDoc(doc(db, "b2s_repas", member));
+                } catch (e) {
+                    console.error("Erreur lors de la suppression : ", e);
+                }
+            }
+        };
+
+        window.exportToCSV = function() {
+            let csvContent = "\uFEFFMembre;Statut;Invites;Commentaire;Heure de mise a jour\n";
+
+            ALL_MEMBERS.forEach(member => {
+                const data = globalResponses[member] || { attendance: "En attente", guestNumber: 0, comment: "", updatedAt: "" };
+                const cleanComment = (data.comment || "").replace(/[\r\n]+/g, " ").replace(/"/g, '""');
+                const row = [
+                    `"${member}"`,
+                    `"${data.attendance}"`,
+                    `"${data.guestNumber || 0}"`,
+                    `"${cleanComment}"`,
+                    `"${data.updatedAt || ''}"`
+                ];
+                csvContent += row.join(";") + "\n";
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", "b2s_repas_participants.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        };
 
         function updateDashboard() {
-            const responses = getStoredResponses();
             const tbody = document.getElementById('responses-table-body');
             tbody.innerHTML = '';
 
@@ -331,34 +425,45 @@
             let guestsCount = 0;
             let absentsCount = 0;
 
-            const members = Object.keys(responses);
+            ALL_MEMBERS.forEach(member => {
+                const data = globalResponses[member];
+                let statusBadge = '';
+                let guestText = '-';
+                let commentText = '-';
 
-            if (members.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400 italic">Aucune réponse enregistrée pour le moment.</td></tr>`;
-            } else {
-                members.forEach(member => {
-                    const data = responses[member];
+                if (data) {
                     if (data.attendance === 'Présent') {
                         presentsCount++;
                         guestsCount += (data.guestNumber || 0);
+                        statusBadge = `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">Présent(e)</span>`;
                     } else {
                         absentsCount++;
+                        statusBadge = `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800">Absent(e)</span>`;
                     }
+                    guestText = (data.guestNumber > 0) ? `+ ${data.guestNumber} invité(e)(s)` : 'Aucun';
+                    commentText = data.comment || '-';
+                } else {
+                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-500">En attente</span>`;
+                }
 
-                    const badgeColor = data.attendance === 'Présent' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
-                    const guestText = (data.guestNumber > 0) ? `+ ${data.guestNumber} invité(e)(s)` : 'Aucun';
+                let actionsTd = '';
+                if (isAdmin && data) {
+                    actionsTd = `<td class="p-3"><button onclick="adminDeleteResponse('${member}')" class="text-red-600 hover:text-red-800 text-xs bg-red-50 hover:bg-red-100 px-2.5 py-1 rounded font-medium">Supprimer</button></td>`;
+                } else if (isAdmin) {
+                    actionsTd = `<td class="p-3"></td>`;
+                }
 
-                    const row = `
-                        <tr class="hover:bg-slate-50">
-                            <td class="p-3 font-medium text-slate-800">${member}</td>
-                            <td class="p-3"><span class="px-2.5 py-1 rounded-full text-xs font-semibold ${badgeColor}">${data.attendance}</span></td>
-                            <td class="p-3 text-slate-600">${guestText}</td>
-                            <td class="p-3 text-slate-500 italic text-xs">${data.comment || '-'}</td>
-                        </tr>
-                    `;
-                    tbody.innerHTML += row;
-                });
-            }
+                const row = `
+                    <tr class="hover:bg-slate-50">
+                        <td class="p-3 font-medium text-slate-800">${member}</td>
+                        <td class="p-3">${statusBadge}</td>
+                        <td class="p-3 text-slate-600">${guestText}</td>
+                        <td class="p-3 text-slate-500 italic text-xs">${commentText}</td>
+                        ${actionsTd}
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
 
             document.getElementById('stat-presents').innerText = presentsCount;
             document.getElementById('stat-guests').innerText = guestsCount;
@@ -366,7 +471,8 @@
             document.getElementById('stat-absents').innerText = absentsCount;
         }
 
-        updateDashboard();
+        // Lancement au démarrage
+        initRealtimeListener();
     </script>
 </body>
 </html>
