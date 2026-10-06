@@ -227,13 +227,30 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
+        // Liste triée par NOM puis Prénom avec format NOM Prénom
         const ALL_MEMBERS = [
-            "Thierry Anceaume", "Thomas LE LONS", "Franck Auzemery", "Yves Bouchard", 
-            "Jérémy Brault", "Vincent Brugaro", "Mathieu Champsaur", "Aurélie Chollet Weyl", 
-            "Quentin Ferdeau", "Frédéric Fontaine", "Jean-Charles Bouquet", "Laurent Fouville", 
-            "Erwan Leroux", "Hans Levillain", "Romain Lesacher", "Sébastien MONMARCHE", 
-            "Christophe Rebeyrole", "Laurent Husson", "Marc Delaunay", "Thierry Taillandier", 
-            "Xavier Lerede", "Yann Quebriac"
+            "ANCEAUME Thierry",
+            "AUZEMERY Franck",
+            "BOUCHARD Yves",
+            "BOUQUET Jean-Charles",
+            "BRAULT Jérémy",
+            "BRUGARO Vincent",
+            "CHAMPSAUR Mathieu",
+            "CHOLLET WEYL Aurélie",
+            "DELAUNAY Marc",
+            "FERDEAU Quentin",
+            "FONTAINE Frédéric",
+            "FOUVILLE Laurent",
+            "HUSSON Laurent",
+            "LE LONS Thomas",
+            "LEREDE Xavier",
+            "LEROUX Erwan",
+            "LESACHER Romain",
+            "LEVILLAIN Hans",
+            "MONMARCHE Sébastien",
+            "QUEBRIAC Yann",
+            "REBEYROLE Christophe",
+            "TAILLANDIER Thierry"
         ];
 
         const ADMIN_PASSWORD = "admin2026"; 
@@ -293,303 +310,3 @@
                     toggleGuestCount();
                     document.getElementById('guest-number').value = resp.guestNumber;
                 } else {
-                    document.getElementById('has-guests').checked = false;
-                    toggleGuestCount();
-                }
-                document.getElementById('comment').value = resp.comment || '';
-            } else {
-                document.getElementById('rsvp-form').reset();
-                toggleGuests(false);
-            }
-        };
-
-        // Date événement
-        function getNextEventDate() {
-            const now = new Date();
-            let year = now.getFullYear();
-            let month = now.getMonth();
-            
-            let lastDay = new Date(year, month + 1, 0);
-            let dayOfWeek = lastDay.getDay();
-            let diff = (dayOfWeek + 2) % 7; 
-            let lastFridayDate = new Date(year, month, lastDay.getDate() - diff);
-            
-            if (now > lastFridayDate) {
-                month++;
-                if (month > 11) { month = 0; year++; }
-                lastDay = new Date(year, month + 1, 0);
-                dayOfWeek = lastDay.getDay();
-                diff = (dayOfWeek + 2) % 7;
-                lastFridayDate = new Date(year, month, lastDay.getDate() - diff);
-            }
-
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            const dateStr = lastFridayDate.toLocaleDateString('fr-FR', options);
-            return `Repas du ${dateStr} à 20h00`;
-        }
-
-        document.getElementById('event-date').innerText = getNextEventDate();
-
-        // Firestore temps réel
-        function initRealtimeListener() {
-            onSnapshot(collection(db, "b2s_repas"), (snapshot) => {
-                globalResponses = {};
-                snapshot.forEach((docSnap) => {
-                    globalResponses[docSnap.id] = docSnap.data();
-                });
-                updateDashboard();
-                checkUrlMember();
-            }, (error) => {
-                console.error("Erreur de synchronisation Firestore : ", error);
-            });
-        }
-
-        function checkUrlMember() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const memberParam = urlParams.get('membre');
-            
-            if (memberParam && ALL_MEMBERS.includes(memberParam)) {
-                const userSelect = document.getElementById('user-select');
-                if (userSelect) userSelect.value = memberParam;
-                onUserSelected(memberParam);
-            }
-        }
-
-        window.resetForm = function() {
-            document.getElementById('user-select').value = "";
-            onUserSelected("");
-        };
-
-        window.toggleAdminLogin = function() {
-            const adminBox = document.getElementById('admin-login-box');
-            adminBox.classList.toggle('hidden');
-            document.getElementById('admin-error').classList.add('hidden');
-        };
-
-        window.checkAdmin = function() {
-            const adminPwdInput = document.getElementById('admin-password');
-            const error = document.getElementById('admin-error');
-            const password = adminPwdInput.value.trim();
-
-            if (password !== ADMIN_PASSWORD) {
-                error.classList.remove('hidden');
-                return;
-            }
-
-            error.classList.add('hidden');
-            isAdmin = true;
-            adminPwdInput.value = "";
-
-            document.getElementById('admin-login-box').classList.add('hidden');
-            document.getElementById('admin-trigger-box').classList.add('hidden');
-            document.getElementById('admin-active-box').classList.remove('hidden');
-            document.getElementById('admin-controls').classList.remove('hidden');
-            document.getElementById('admin-tools-box').classList.remove('hidden');
-            document.getElementById('th-actions').classList.remove('hidden');
-            updateDashboard();
-        };
-
-        window.exitAdmin = function() {
-            isAdmin = false;
-            document.getElementById('admin-active-box').classList.add('hidden');
-            document.getElementById('admin-trigger-box').classList.remove('hidden');
-            document.getElementById('admin-controls').classList.add('hidden');
-            document.getElementById('admin-tools-box').classList.add('hidden');
-            document.getElementById('th-actions').classList.add('hidden');
-            updateDashboard();
-        };
-
-        // Reset mot de passe utilisateur
-        window.userRequestResetPassword = async function() {
-            if (!currentMember) {
-                alert("Veuillez d'abord sélectionner votre nom dans le menu déroulant.");
-                return;
-            }
-
-            try {
-                const userDoc = await getDoc(doc(db, "b2s_repas", currentMember));
-                if (userDoc.exists() && userDoc.data().email) {
-                    await sendPasswordResetEmail(auth, userDoc.data().email);
-                    alert(`Un e-mail de réinitialisation a été envoyé à ${userDoc.data().email}.`);
-                } else {
-                    alert("Aucune adresse email enregistrée pour ce membre.");
-                }
-            } catch (error) {
-                console.error("Erreur de réinitialisation :", error);
-                alert("Impossible d'envoyer l'e-mail de réinitialisation.");
-            }
-        };
-
-        // Reset mot de passe admin
-        window.adminSendResetEmail = async function() {
-            const selectedMember = document.getElementById('admin-user-select').value;
-            if (!selectedMember) {
-                alert("Veuillez sélectionner un membre.");
-                return;
-            }
-
-            try {
-                const userDoc = await getDoc(doc(db, "b2s_repas", selectedMember));
-                if (userDoc.exists() && userDoc.data().email) {
-                    await sendPasswordResetEmail(auth, userDoc.data().email);
-                    alert(`E-mail de réinitialisation envoyé avec succès à ${userDoc.data().email}.`);
-                } else {
-                    alert("Aucune adresse e-mail trouvée pour ce membre dans la base de données.");
-                }
-            } catch (error) {
-                console.error("Erreur admin reset :", error);
-                alert("Erreur lors de l'envoi du mail de réinitialisation.");
-            }
-        };
-
-        window.toggleGuests = function(isPresent) {
-            const container = document.getElementById('guests-container');
-            if (isPresent) {
-                container.classList.remove('hidden');
-            } else {
-                container.classList.add('hidden');
-                document.getElementById('has-guests').checked = false;
-                toggleGuestCount();
-            }
-        };
-
-        window.toggleGuestCount = function() {
-            const isChecked = document.getElementById('has-guests').checked;
-            const countBox = document.getElementById('guest-count-box');
-            if (isChecked) {
-                countBox.classList.remove('hidden');
-            } else {
-                countBox.classList.add('hidden');
-                document.getElementById('guest-number').value = "1";
-            }
-        };
-
-        window.submitRsvp = async function(event) {
-            event.preventDefault();
-
-            if (!currentMember) {
-                alert("Veuillez sélectionner votre nom dans le menu déroulant avant de valider.");
-                return;
-            }
-
-            const checkedRadio = document.querySelector('input[name="attendance"]:checked');
-            if (!checkedRadio) return;
-
-            const attendance = checkedRadio.value;
-            const hasGuests = document.getElementById('has-guests').checked;
-            const guestNumber = hasGuests ? parseInt(document.getElementById('guest-number').value) || 0 : 0;
-            const comment = document.getElementById('comment').value.trim();
-
-            const payload = {
-                attendance,
-                hasGuests,
-                guestNumber: attendance === 'Présent' && hasGuests ? guestNumber : 0,
-                comment,
-                updatedAt: new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'})
-            };
-
-            try {
-                await setDoc(doc(db, "b2s_repas", currentMember), payload, { merge: true });
-                alert("Vos modifications ont bien été enregistrées en ligne !");
-            } catch (e) {
-                console.error("Erreur lors de l'enregistrement : ", e);
-                alert("Erreur lors de l'enregistrement. Vérifiez votre connexion.");
-            }
-        };
-
-        window.adminDeleteResponse = async function(member) {
-            if (confirm(`Voulez-vous vraiment supprimer la réponse de ${member} ?`)) {
-                try {
-                    await deleteDoc(doc(db, "b2s_repas", member));
-                } catch (e) {
-                    console.error("Erreur lors de la suppression : ", e);
-                }
-            }
-        };
-
-        window.exportToCSV = function() {
-            let csvContent = "\uFEFFMembre;Statut;Invites;Commentaire;Heure de mise a jour\n";
-
-            ALL_MEMBERS.forEach(member => {
-                const data = globalResponses[member] || { attendance: "En attente", guestNumber: 0, comment: "", updatedAt: "" };
-                const cleanComment = (data.comment || "").replace(/[\r\n]+/g, " ").replace(/"/g, '""');
-                const row = [
-                    `"${member}"`,
-                    `"${data.attendance}"`,
-                    `"${data.guestNumber || 0}"`,
-                    `"${cleanComment}"`,
-                    `"${data.updatedAt || ''}"`
-                ];
-                csvContent += row.join(";") + "\n";
-            });
-
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement("a");
-            link.setAttribute("href", url);
-            link.setAttribute("download", "b2s_repas_participants.csv");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        };
-
-        function updateDashboard() {
-            const tbody = document.getElementById('responses-table-body');
-            tbody.innerHTML = '';
-
-            let presentsCount = 0;
-            let guestsCount = 0;
-            let absentsCount = 0;
-
-            ALL_MEMBERS.forEach(member => {
-                const data = globalResponses[member];
-                let statusBadge = '';
-                let guestText = '-';
-                let commentText = '-';
-
-                if (data) {
-                    if (data.attendance === 'Présent') {
-                        presentsCount++;
-                        guestsCount += (data.guestNumber || 0);
-                        statusBadge = `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">Présent(e)</span>`;
-                    } else {
-                        absentsCount++;
-                        statusBadge = `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800">Absent(e)</span>`;
-                    }
-                    guestText = (data.guestNumber > 0) ? `+ ${data.guestNumber} invité(e)(s)` : 'Aucun';
-                    commentText = data.comment || '-';
-                } else {
-                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-500">En attente</span>`;
-                }
-
-                let actionsTd = '';
-                if (isAdmin && data) {
-                    actionsTd = `<td class="p-3"><button onclick="adminDeleteResponse('${member}')" class="text-red-600 hover:text-red-800 text-xs bg-red-50 hover:bg-red-100 px-2.5 py-1 rounded font-medium">Supprimer</button></td>`;
-                } else if (isAdmin) {
-                    actionsTd = `<td class="p-3"></td>`;
-                }
-
-                const row = `
-                    <tr class="hover:bg-slate-50">
-                        <td class="p-3 font-medium text-slate-800">${member}</td>
-                        <td class="p-3">${statusBadge}</td>
-                        <td class="p-3 text-slate-600">${guestText}</td>
-                        <td class="p-3 text-slate-500 italic text-xs">${commentText}</td>
-                        ${actionsTd}
-                    </tr>
-                `;
-                tbody.innerHTML += row;
-            });
-
-            document.getElementById('stat-presents').innerText = presentsCount;
-            document.getElementById('stat-guests').innerText = guestsCount;
-            document.getElementById('stat-total-repas').innerText = presentsCount + guestsCount;
-            document.getElementById('stat-absents').innerText = absentsCount;
-        }
-
-        // Lancement au démarrage
-        populateMemberSelects();
-        initRealtimeListener();
-    </script>
-</body>
-</html>
