@@ -79,19 +79,36 @@
         </div>
 
         <!-- Formulaire de Connexion & Gestion Admin -->
-        <div id="admin-login-box" class="bg-white rounded-xl shadow-md p-4 sm:p-6 mb-6 border border-slate-100 hidden">
-            <h2 class="text-base sm:text-lg font-semibold text-b2sBurgundy mb-3">Connexion Administrateur</h2>
-            <div class="flex flex-col gap-3">
-                <input type="password" id="admin-password" placeholder="Mot de passe administrateur" class="p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-b2sRose focus:outline-none text-sm sm:text-base">
-                <div class="flex gap-2">
-                    <button onclick="checkAdmin()" class="flex-grow bg-b2sRose text-white px-6 py-3 rounded-lg font-medium hover:bg-pink-700 transition-colors text-sm sm:text-base">
-                        Valider Admin
-                    </button>
-                    <button onclick="toggleAdminLogin()" class="bg-slate-200 text-slate-700 px-4 py-3 rounded-lg text-sm">Fermer</button>
-                </div>
-            </div>
-            <p id="admin-error" class="text-red-500 text-sm mt-2 hidden">Mot de passe incorrect.</p>
+      <div id="admin-login-box" class="bg-white rounded-xl shadow-md p-4 sm:p-6 mb-6 border border-slate-100 hidden">
+    <h2 class="text-base sm:text-lg font-semibold text-b2sBurgundy mb-3">Connexion Administrateur</h2>
+    <div class="flex flex-col gap-3">
+        <!-- Ajout du déclenchement sur la touche Entrée (onkeypress) -->
+        <input 
+            type="password" 
+            id="admin-password" 
+            placeholder="Mot de passe administrateur" 
+            onkeypress="if(event.key === 'Enter') checkAdmin()"
+            class="p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-b2sRose focus:outline-none text-sm sm:text-base"
+        >
+        <div class="flex gap-2">
+            <button 
+                type="button" 
+                onclick="checkAdmin()" 
+                class="flex-grow bg-b2sRose text-white px-6 py-3 rounded-lg font-medium hover:bg-pink-700 transition-colors text-sm sm:text-base"
+            >
+                Valider Admin
+            </button>
+            <button 
+                type="button" 
+                onclick="toggleAdminLogin()" 
+                class="bg-slate-200 text-slate-700 px-4 py-3 rounded-lg text-sm"
+            >
+                Fermer
+            </button>
         </div>
+    </div>
+    <p id="admin-error" class="text-red-500 text-sm mt-2 hidden">Mot de passe incorrect.</p>
+</div>
 
         <!-- Outils Admin Réinitialisation -->
         <div id="admin-tools-box" class="bg-white rounded-xl shadow-md p-4 sm:p-6 mb-6 border border-slate-100 hidden">
@@ -410,29 +427,7 @@
             document.getElementById('admin-error').classList.add('hidden');
         };
 
-        window.checkAdmin = function() {
-            const adminPwdInput = document.getElementById('admin-password');
-            const error = document.getElementById('admin-error');
-            const password = adminPwdInput.value.trim();
-
-            if (password !== ADMIN_PASSWORD) {
-                error.classList.remove('hidden');
-                return;
-            }
-
-            error.classList.add('hidden');
-            isAdmin = true;
-            adminPwdInput.value = "";
-
-            document.getElementById('admin-login-box').classList.add('hidden');
-            document.getElementById('admin-trigger-box').classList.add('hidden');
-            document.getElementById('admin-active-box').classList.remove('hidden');
-            document.getElementById('admin-controls').classList.remove('hidden');
-            document.getElementById('admin-tools-box').classList.remove('hidden');
-            document.getElementById('th-actions').classList.remove('hidden');
-            updateDashboard();
-        };
-
+       
         window.exitAdmin = function() {
             isAdmin = false;
             document.getElementById('admin-active-box').classList.add('hidden');
@@ -448,7 +443,35 @@
                 alert("Veuillez d'abord sélectionner votre nom dans le menu déroulant.");
                 return;
             }
+        window.checkAdmin = function() {
+            const adminInput = document.getElementById('admin-password');
+            const error = document.getElementById('admin-error');
+    
+    if (!adminInput) return;
+    
+    const password = adminInput.value.trim();
 
+    if (password === ADMIN_PASSWORD) {
+        error.classList.add('hidden');
+        isAdmin = true;
+        adminInput.value = ""; // Réinitialise le champ
+
+        // Masque la boîte de connexion et le bouton d'ouverture
+        document.getElementById('admin-login-box').classList.add('hidden');
+        document.getElementById('admin-trigger-box').classList.add('hidden');
+        
+        // Affiche les éléments réservés à l'admin
+        document.getElementById('admin-active-box').classList.remove('hidden');
+        document.getElementById('admin-controls').classList.remove('hidden');
+        document.getElementById('admin-tools-box').classList.remove('hidden');
+        document.getElementById('th-actions').classList.remove('hidden');
+        
+        // Rafraîchit le tableau avec les options d'administration
+        updateDashboard();
+    } else {
+        error.classList.remove('hidden');
+    }
+};
             try {
                 const userDoc = await getDoc(doc(db, "b2s_repas", currentMember));
                 if (userDoc.exists() && userDoc.data().email) {
