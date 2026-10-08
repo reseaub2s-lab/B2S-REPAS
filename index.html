@@ -299,7 +299,6 @@
                 return;
             }
 
-            // Vérifie si le membre a déjà un compte enregistré
             const userDoc = await getDoc(doc(db, "b2s_repas", currentMember));
             const hasAccount = userDoc.exists() && userDoc.data().accountCreated;
 
@@ -338,11 +337,9 @@
 
             try {
                 if (hasAccount) {
-                    // Connexion avec l'email enregistré
                     const email = userDoc.data().email;
                     await signInWithEmailAndPassword(auth, email, password);
                 } else {
-                    // Création de compte
                     const email = emailInput.value.trim();
                     if (!email) {
                         authError.textContent = "Un e-mail valide est requis pour la création de compte.";
@@ -363,7 +360,6 @@
                     }, { merge: true });
                 }
 
-                // Déblocage du formulaire
                 unlockForm();
             } catch (err) {
                 console.error("Erreur Auth :", err);
@@ -388,7 +384,6 @@
             document.getElementById('logged-user-name').textContent = currentMember;
             document.getElementById('authenticated-badge').classList.remove('hidden');
 
-            // Pré-remplissage des données existantes
             if (globalResponses[currentMember]) {
                 const resp = globalResponses[currentMember];
                 if (resp.attendance) {
@@ -585,12 +580,16 @@
             const guestNumber = hasGuests ? parseInt(document.getElementById('guest-number').value) || 0 : 0;
             const comment = document.getElementById('comment').value.trim();
 
+            // Date + Heure complètes
+            const now = new Date();
+            const fullDateTime = now.toLocaleDateString('fr-FR') + ' à ' + now.toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'});
+
             const payload = {
                 attendance,
                 hasGuests,
                 guestNumber: attendance === 'Présent' && hasGuests ? guestNumber : 0,
                 comment,
-                updatedAt: new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'})
+                updatedAt: fullDateTime
             };
 
             try {
@@ -612,8 +611,42 @@
             }
         };
 
+        // Export CSV enrichi avec totaux et date/heure
         window.exportToCSV = function() {
-            let csvContent = "\uFEFFMembre;Statut;Invites;Commentaire;Heure de mise a jour\n";
+            let presentsCount = 0;
+            let guestsCount = 0;
+            let absentsCount = 0;
+            let pendingCount = 0;
+
+            ALL_MEMBERS.forEach(member => {
+                const data = globalResponses[member];
+                if (data && data.attendance) {
+                    if (data.attendance === 'Présent') {
+                        presentsCount++;
+                        guestsCount += (data.guestNumber || 0);
+                    } else if (data.attendance === 'Absent') {
+                        absentsCount++;
+                    }
+                } else {
+                    pendingCount++;
+                }
+            });
+
+            const totalPersons = presentsCount + guestsCount;
+            const exportDate = new Date().toLocaleDateString('fr-FR') + ' à ' + new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'});
+
+            let csvContent = "\uFEFF"; // UTF-8 BOM pour Excel
+            
+            // Section Récapitulatif Global
+            csvContent += `"RECAPITULATIF REPAS B2S SAINT-MALO";"Généré le : ${exportDate}"\n`;
+            csvContent += `"Total Membres Présents";"${presentsCount}"\n`;
+            csvContent += `"Total Invités";"${guestsCount}"\n`;
+            csvContent += `"TOTAL COMPLET PERSONNES PRESENTES (Membres + Invités)";"${totalPersons}"\n`;
+            csvContent += `"Total Membres Absents";"${absentsCount}"\n`;
+            csvContent += `"En attente de réponse";"${pendingCount}"\n\n`;
+
+            // Section Tableau
+            csvContent += "Membre;Statut;Invités;Commentaire;Date et Heure de Mise à jour\n";
 
             ALL_MEMBERS.forEach(member => {
                 const data = globalResponses[member] || { attendance: "En attente", guestNumber: 0, comment: "", updatedAt: "" };
@@ -632,7 +665,7 @@
             const url = URL.createObjectURL(blob);
             const link = document.createElement("a");
             link.setAttribute("href", url);
-            link.setAttribute("download", "b2s_repas_participants.csv");
+            link.setAttribute("download", "b2s_repas_recapitulatif_complet.csv");
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
