@@ -75,7 +75,7 @@
             </div>
         </div>
 
-        <!-- Formulaire de Connexion & Gestion Admin -->
+        <!-- Formulaire de Connexion Admin -->
         <div id="admin-login-box" class="bg-white rounded-xl shadow-md p-4 sm:p-6 mb-6 border border-slate-100 hidden">
             <h2 class="text-base sm:text-lg font-semibold text-b2sBurgundy mb-3">Connexion Administrateur</h2>
             <div class="flex flex-col gap-3">
@@ -88,18 +88,76 @@
             <p id="admin-error" class="text-red-500 text-sm mt-2 hidden"></p>
         </div>
 
-        <!-- Outils Admin Réinitialisation -->
-        <div id="admin-tools-box" class="bg-white rounded-xl shadow-md p-4 sm:p-6 mb-6 border border-slate-100 hidden">
-            <h3 class="text-base font-bold text-b2sBurgundy mb-2">Réinitialisation de mot de passe membre (Admin)</h3>
-            <p class="text-xs text-slate-600 mb-4">Sélectionnez un membre pour lui envoyer un e-mail de réinitialisation :</p>
-            <div class="flex flex-col sm:flex-row gap-3">
-                <select id="admin-user-select" class="p-3 border border-slate-300 rounded-lg text-sm flex-grow focus:ring-2 focus:ring-b2sRose focus:outline-none">
-                    <option value="">-- Choisir un membre --</option>
-                </select>
-                <button onclick="adminSendResetEmail()" class="bg-b2sBurgundy text-white px-5 py-3 rounded-lg text-xs font-semibold hover:bg-b2sDark transition-colors shadow-sm">
-                    Envoyer le lien
+        <!-- Panneau de Gestion Administrateur -->
+        <div id="admin-tools-box" class="bg-white rounded-xl shadow-md p-4 sm:p-6 mb-6 border border-slate-200 hidden space-y-6">
+            
+            <!-- 1. Saisie / Modification Réponse par Admin -->
+            <div class="border-b border-slate-200 pb-5">
+                <h3 class="text-base font-bold text-b2sBurgundy mb-2">✏️ Saisir / Modifier la réponse d'un membre</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Sélectionnez un membre :</label>
+                        <select id="admin-edit-member" onchange="adminLoadMemberResponse(this.value)" class="w-full p-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-b2sRose focus:outline-none">
+                            <option value="">-- Choisir un membre --</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Statut Présence :</label>
+                        <select id="admin-edit-attendance" class="w-full p-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-b2sRose focus:outline-none">
+                            <option value="Présent">Présent(e)</option>
+                            <option value="Absent">Absent(e)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Nombre d'invités :</label>
+                        <input type="number" id="admin-edit-guests" min="0" max="10" value="0" class="w-full p-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-b2sRose focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Commentaire / Remarque :</label>
+                        <input type="text" id="admin-edit-comment" placeholder="Optionnel" class="w-full p-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-b2sRose focus:outline-none">
+                    </div>
+                </div>
+                <button onclick="adminSaveMemberResponse()" class="bg-b2sBurgundy text-white px-5 py-2.5 rounded-lg text-xs font-semibold hover:bg-b2sDark transition-colors shadow-sm">
+                    💾 Enregistrer la réponse
                 </button>
             </div>
+
+            <!-- 2. Gestion des membres (Ajout / Suppression) -->
+            <div class="border-b border-slate-200 pb-5">
+                <h3 class="text-base font-bold text-b2sBurgundy mb-2">👤 Gestion de la Liste des Membres</h3>
+                
+                <div class="flex flex-col sm:flex-row gap-3 mb-4">
+                    <input type="text" id="admin-new-member" placeholder="NOM Prénom (ex: DUPONT Jean)" class="p-2.5 border border-slate-300 rounded-lg text-sm flex-grow focus:ring-2 focus:ring-b2sRose focus:outline-none">
+                    <button onclick="adminAddMember()" class="bg-emerald-600 text-white px-5 py-2.5 rounded-lg text-xs font-semibold hover:bg-emerald-700 transition-colors shadow-sm">
+                        ➕ Ajouter ce membre
+                    </button>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <select id="admin-delete-member-select" class="p-2.5 border border-slate-300 rounded-lg text-sm flex-grow focus:ring-2 focus:ring-b2sRose focus:outline-none">
+                        <option value="">-- Sélectionner un membre à supprimer --</option>
+                    </select>
+                    <button onclick="adminDeleteMember()" class="bg-red-600 text-white px-5 py-2.5 rounded-lg text-xs font-semibold hover:bg-red-700 transition-colors shadow-sm">
+                        🗑️ Supprimer le membre
+                    </button>
+                </div>
+            </div>
+
+            <!-- 3. Réinitialisation de mot de passe -->
+            <div>
+                <h3 class="text-base font-bold text-b2sBurgundy mb-2">📧 Mot de passe membre</h3>
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <select id="admin-user-select" class="p-2.5 border border-slate-300 rounded-lg text-sm flex-grow focus:ring-2 focus:ring-b2sRose focus:outline-none">
+                        <option value="">-- Choisir un membre --</option>
+                    </select>
+                    <button onclick="adminSendResetEmail()" class="bg-slate-700 text-white px-5 py-2.5 rounded-lg text-xs font-semibold hover:bg-slate-800 transition-colors shadow-sm">
+                        Envoyer lien de réinitialisation
+                    </button>
+                </div>
+            </div>
+
         </div>
 
         <!-- Section Connexion / Identification Membre -->
@@ -120,13 +178,11 @@
             <div id="auth-box" class="hidden mb-6 p-4 bg-slate-100 border border-slate-200 rounded-lg space-y-3">
                 <p id="auth-status-msg" class="text-sm font-medium text-slate-700"></p>
 
-                <!-- Champ Email (demandé seulement lors de la 1ère création de compte) -->
                 <div id="email-group" class="hidden">
                     <label for="user-email" class="block text-xs font-semibold text-slate-600 mb-1">Votre e-mail *</label>
                     <input type="email" id="user-email" placeholder="nom@exemple.fr" class="w-full p-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-b2sRose focus:outline-none">
                 </div>
 
-                <!-- Champ Mot de passe membre -->
                 <div>
                     <label for="user-password" class="block text-xs font-semibold text-slate-600 mb-1">Votre mot de passe *</label>
                     <input type="password" id="user-password" placeholder="Mot de passe" onkeypress="if(event.key==='Enter') handleUserAuth()" class="w-full p-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-b2sRose focus:outline-none">
@@ -143,7 +199,7 @@
                 <p id="user-auth-error" class="text-xs text-red-600 font-medium hidden"></p>
             </div>
 
-            <!-- ÉTAPE 3 : Formulaire de réponse (Bloqué tant que non authentifié) -->
+            <!-- ÉTAPE 3 : Formulaire de réponse -->
             <form id="rsvp-form" onsubmit="submitRsvp(event)" class="space-y-6 opacity-50 pointer-events-none transition-opacity duration-200">
                 <div id="authenticated-badge" class="hidden bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs p-3 rounded-lg flex justify-between items-center">
                     <span>Authentifié sous le nom de <strong id="logged-user-name"></strong></span>
@@ -249,7 +305,7 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        const ALL_MEMBERS = [
+        let ALL_MEMBERS = [
             "ANCEAUME Thierry", "AUZEMERY Franck", "BOUCHARD Yves", "BOUQUET Jean-Charles",
             "BRAULT Jérémy", "BRUGARO Vincent", "CHAMPSAUR Mathieu", "CHOLLET WEYL Aurélie",
             "DELAUNAY Marc", "FERDEAU Quentin", "FONTAINE Frédéric", "FOUVILLE Laurent",
@@ -264,28 +320,144 @@
         let isAuthenticatedUser = false;
         let globalResponses = {};
 
+        async function loadCustomMembersList() {
+            try {
+                const listDoc = await getDoc(doc(db, "b2s_config", "members_list"));
+                if (listDoc.exists() && Array.isArray(listDoc.data().members)) {
+                    ALL_MEMBERS = listDoc.data().members;
+                }
+            } catch(e) {
+                console.error("Erreur chargement liste membres:", e);
+            }
+            populateMemberSelects();
+            updateDashboard();
+        }
+
+        async function saveMembersList() {
+            try {
+                await setDoc(doc(db, "b2s_config", "members_list"), { members: ALL_MEMBERS });
+            } catch(e) {
+                console.error("Erreur sauvegarde membres:", e);
+            }
+        }
+
         function populateMemberSelects() {
-            const userSelect = document.getElementById('user-select');
-            const adminSelect = document.getElementById('admin-user-select');
+            const selects = [
+                document.getElementById('user-select'),
+                document.getElementById('admin-user-select'),
+                document.getElementById('admin-edit-member'),
+                document.getElementById('admin-delete-member-select')
+            ];
 
-            if (userSelect) userSelect.innerHTML = '<option value="">-- Sélectionnez votre nom dans la liste --</option>';
-            if (adminSelect) adminSelect.innerHTML = '<option value="">-- Choisir un membre --</option>';
+            selects.forEach(sel => {
+                if (!sel) return;
+                const firstOpt = sel.options[0];
+                sel.innerHTML = '';
+                if (firstOpt) sel.appendChild(firstOpt);
+            });
 
-            ALL_MEMBERS.forEach(member => {
-                if (userSelect) {
-                    const opt1 = document.createElement('option');
-                    opt1.value = member;
-                    opt1.textContent = member;
-                    userSelect.appendChild(opt1);
-                }
-                if (adminSelect) {
-                    const opt2 = document.createElement('option');
-                    opt2.value = member;
-                    opt2.textContent = member;
-                    adminSelect.appendChild(opt2);
-                }
+            ALL_MEMBERS.sort().forEach(member => {
+                selects.forEach(sel => {
+                    if (sel) {
+                        const opt = document.createElement('option');
+                        opt.value = member;
+                        opt.textContent = member;
+                        sel.appendChild(opt);
+                    }
+                });
             });
         }
+
+        window.adminAddMember = async function() {
+            const input = document.getElementById('admin-new-member');
+            const name = input.value.trim();
+            if (!name) {
+                alert("Veuillez entrer un nom et prénom.");
+                return;
+            }
+            if (ALL_MEMBERS.includes(name)) {
+                alert("Ce membre existe déjà dans la liste.");
+                return;
+            }
+
+            ALL_MEMBERS.push(name);
+            await saveMembersList();
+            populateMemberSelects();
+            updateDashboard();
+            input.value = "";
+            alert(`Le membre ${name} a été ajouté avec succès.`);
+        };
+
+        window.adminDeleteMember = async function() {
+            const select = document.getElementById('admin-delete-member-select');
+            const memberToDelete = select.value;
+
+            if (!memberToDelete) {
+                alert("Veuillez sélectionner un membre à supprimer.");
+                return;
+            }
+
+            // ÉTAPE 1 DE VALIDATION
+            const confirm1 = confirm(`PREMIÈRE CONFIRMATION :\nÊtes-vous sûr de vouloir supprimer le membre "${memberToDelete}" ?`);
+            if (!confirm1) return;
+
+            // ÉTAPE 2 DE DOUBLE VALIDATION
+            const confirm2 = confirm(`DOUBLE CONFIRMATION DE SÉCURITÉ :\nAttention, cela effacera également la réponse et les données de "${memberToDelete}".\n\nConfirmer définitivement la suppression ?`);
+            if (!confirm2) return;
+
+            // Suppression de la liste et de la base de données
+            ALL_MEMBERS = ALL_MEMBERS.filter(m => m !== memberToDelete);
+            await saveMembersList();
+            
+            try {
+                await deleteDoc(doc(db, "b2s_repas", memberToDelete));
+            } catch (e) {
+                console.error("Erreur suppression réponse :", e);
+            }
+
+            populateMemberSelects();
+            updateDashboard();
+            alert(`Le membre ${memberToDelete} a été supprimé définitivement.`);
+        };
+
+        window.adminLoadMemberResponse = function(member) {
+            if (!member) return;
+            const data = globalResponses[member] || {};
+            document.getElementById('admin-edit-attendance').value = data.attendance || 'Présent';
+            document.getElementById('admin-edit-guests').value = data.guestNumber || 0;
+            document.getElementById('admin-edit-comment').value = data.comment || '';
+        };
+
+        window.adminSaveMemberResponse = async function() {
+            const member = document.getElementById('admin-edit-member').value;
+            if (!member) {
+                alert("Veuillez sélectionner un membre.");
+                return;
+            }
+
+            const attendance = document.getElementById('admin-edit-attendance').value;
+            const guestNumber = parseInt(document.getElementById('admin-edit-guests').value) || 0;
+            const comment = document.getElementById('admin-edit-comment').value.trim();
+
+            const now = new Date();
+            const fullDateTime = now.toLocaleDateString('fr-FR') + ' à ' + now.toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'});
+
+            const payload = {
+                attendance,
+                hasGuests: guestNumber > 0,
+                guestNumber: attendance === 'Présent' ? guestNumber : 0,
+                comment,
+                updatedAt: fullDateTime + " (par Admin)"
+            };
+
+            try {
+                await setDoc(doc(db, "b2s_repas", member), payload, { merge: true });
+                alert(`La réponse de ${member} a bien été enregistrée par l'admin !`);
+            } catch (e) {
+                console.error("Erreur modification Admin :", e);
+                alert("Erreur lors de la sauvegarde.");
+            }
+        };
 
         window.onUserSelected = async function(selectedMember) {
             currentMember = selectedMember;
@@ -580,7 +752,6 @@
             const guestNumber = hasGuests ? parseInt(document.getElementById('guest-number').value) || 0 : 0;
             const comment = document.getElementById('comment').value.trim();
 
-            // Date + Heure complètes
             const now = new Date();
             const fullDateTime = now.toLocaleDateString('fr-FR') + ' à ' + now.toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'});
 
@@ -602,7 +773,7 @@
         };
 
         window.adminDeleteResponse = async function(member) {
-            if (confirm(`Voulez-vous vraiment supprimer la réponse de ${member} ?`)) {
+            if (confirm(`Voulez-vous réinitialiser la réponse de ${member} ?`)) {
                 try {
                     await deleteDoc(doc(db, "b2s_repas", member));
                 } catch (e) {
@@ -611,7 +782,6 @@
             }
         };
 
-        // Export CSV enrichi avec totaux et date/heure
         window.exportToCSV = function() {
             let presentsCount = 0;
             let guestsCount = 0;
@@ -635,9 +805,8 @@
             const totalPersons = presentsCount + guestsCount;
             const exportDate = new Date().toLocaleDateString('fr-FR') + ' à ' + new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'});
 
-            let csvContent = "\uFEFF"; // UTF-8 BOM pour Excel
+            let csvContent = "\uFEFF";
             
-            // Section Récapitulatif Global
             csvContent += `"RECAPITULATIF REPAS B2S SAINT-MALO";"Généré le : ${exportDate}"\n`;
             csvContent += `"Total Membres Présents";"${presentsCount}"\n`;
             csvContent += `"Total Invités";"${guestsCount}"\n`;
@@ -645,7 +814,6 @@
             csvContent += `"Total Membres Absents";"${absentsCount}"\n`;
             csvContent += `"En attente de réponse";"${pendingCount}"\n\n`;
 
-            // Section Tableau
             csvContent += "Membre;Statut;Invités;Commentaire;Date et Heure de Mise à jour\n";
 
             ALL_MEMBERS.forEach(member => {
@@ -680,7 +848,7 @@
             let guestsCount = 0;
             let absentsCount = 0;
 
-            ALL_MEMBERS.forEach(member => {
+            ALL_MEMBERS.sort().forEach(member => {
                 const data = globalResponses[member];
                 let statusBadge = '';
                 let guestText = '-';
@@ -703,7 +871,7 @@
 
                 let actionsTd = '';
                 if (isAdmin && data) {
-                    actionsTd = `<td class="p-3"><button onclick="adminDeleteResponse('${member}')" class="text-red-600 hover:text-red-800 text-xs bg-red-50 hover:bg-red-100 px-2.5 py-1 rounded font-medium">Supprimer</button></td>`;
+                    actionsTd = `<td class="p-3"><button onclick="adminDeleteResponse('${member}')" class="text-red-600 hover:text-red-800 text-xs bg-red-50 hover:bg-red-100 px-2.5 py-1 rounded font-medium">Réinitialiser</button></td>`;
                 } else if (isAdmin) {
                     actionsTd = `<td class="p-3"></td>`;
                 }
@@ -726,8 +894,8 @@
             document.getElementById('stat-absents').innerText = absentsCount;
         }
 
-        window.addEventListener('DOMContentLoaded', () => {
-            populateMemberSelects();
+        window.addEventListener('DOMContentLoaded', async () => {
+            await loadCustomMembersList();
             document.getElementById('event-date').innerText = getNextEventDate();
             initRealtimeListener();
         });
