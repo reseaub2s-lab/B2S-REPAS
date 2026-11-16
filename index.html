@@ -526,11 +526,6 @@
                         return;
                     }
                     await signInWithEmailAndPassword(auth, email, password);
-                    
-                    // Met à jour le drapeau accountCreated s'il était manquant
-                    if (!data.accountCreated) {
-                        await setDoc(doc(db, "b2s_repas", currentMember), { accountCreated: true }, { merge: true });
-                    }
                 } else {
                     const email = emailInput.value.trim();
                     if (!email) {
@@ -544,12 +539,27 @@
                         return;
                     }
 
-                    const userCred = await createUserWithEmailAndPassword(auth, email, password);
-                    await setDoc(doc(db, "b2s_repas", currentMember), {
-                        uid: userCred.user.uid,
-                        email: email,
-                        accountCreated: true
-                    }, { merge: true });
+                    try {
+                        // On essaie de créer le compte dans Authentication
+                        const userCred = await createUserWithEmailAndPassword(auth, email, password);
+                        await setDoc(doc(db, "b2s_repas", currentMember), {
+                            uid: userCred.user.uid,
+                            email: email,
+                            accountCreated: true
+                        }, { merge: true });
+                    } catch (err) {
+                        // Si le compte existe déjà dans Auth mais manquait dans Firestore, on le connecte
+                        if (err.code === 'auth/email-already-in-use') {
+                            await signInWithEmailAndPassword(auth, email, password);
+                            // On répare et crée le document Firestore manquant à la volée
+                            await setDoc(doc(db, "b2s_repas", currentMember), {
+                                email: email,
+                                accountCreated: true
+                            }, { merge: true });
+                        } else {
+                            throw err;
+                        }
+                    }
                 }
 
                 unlockForm();
@@ -557,15 +567,13 @@
                 console.error("Erreur Auth :", err);
                 if (err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
                     authError.textContent = "Mot de passe incorrect.";
-                } else if (err.code === 'auth/email-already-in-use') {
-                    authError.textContent = "Cet e-mail est déjà utilisé par un autre compte.";
                 } else {
                     authError.textContent = "Erreur : " + err.message;
                 }
                 authError.classList.remove('hidden');
             }
         };
-
+            
         function unlockForm() {
             isAuthenticatedUser = true;
             document.getElementById('auth-box').classList.add('hidden');
