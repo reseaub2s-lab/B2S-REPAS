@@ -459,6 +459,7 @@
             }
         };
 
+        
         window.onUserSelected = async function(selectedMember) {
             currentMember = selectedMember;
             const authBox = document.getElementById('auth-box');
@@ -471,22 +472,30 @@
                 return;
             }
 
-            const userDoc = await getDoc(doc(db, "b2s_repas", currentMember));
-            const hasAccount = userDoc.exists() && userDoc.data().accountCreated;
+            try {
+                const userDoc = await getDoc(doc(db, "b2s_repas", currentMember));
+                const data = userDoc.exists() ? userDoc.data() : {};
+                // On vérifie si accountCreated est vrai OU si un email/uid est déjà enregistré
+                const hasAccount = Boolean(data.accountCreated || data.email || data.uid);
 
-            authBox.classList.remove('hidden');
-            const statusMsg = document.getElementById('auth-status-msg');
-            const emailGroup = document.getElementById('email-group');
-            const btnSubmit = document.getElementById('btn-auth-submit');
+                authBox.classList.remove('hidden');
+                const statusMsg = document.getElementById('auth-status-msg');
+                const emailGroup = document.getElementById('email-group');
+                const btnSubmit = document.getElementById('btn-auth-submit');
 
-            if (hasAccount) {
-                statusMsg.innerHTML = `🔒 Compte existant pour <strong>${currentMember}</strong>. Saisissez votre mot de passe :`;
-                emailGroup.classList.add('hidden');
-                btnSubmit.textContent = "Se connecter";
-            } else {
-                statusMsg.innerHTML = `🆕 Première connexion pour <strong>${currentMember}</strong>. Créez vos identifiants :`;
-                emailGroup.classList.remove('hidden');
-                btnSubmit.textContent = "Créer mon compte";
+                if (hasAccount) {
+                    statusMsg.innerHTML = `🔒 Compte existant pour <strong>${currentMember}</strong>. Saisissez votre mot de passe :`;
+                    emailGroup.classList.add('hidden');
+                    btnSubmit.textContent = "Se connecter";
+                } else {
+                    statusMsg.innerHTML = `🆕 Première connexion pour <strong>${currentMember}</strong>. Créez vos identifiants :`;
+                    emailGroup.classList.remove('hidden');
+                    btnSubmit.textContent = "Créer mon compte";
+                }
+            } catch (e) {
+                console.error("Erreur lecture profil Firestore :", e);
+                authError.textContent = "Impossible de vérifier le compte (erreur de permissions Firestore).";
+                authError.classList.remove('hidden');
             }
         };
 
@@ -505,12 +514,23 @@
             }
 
             const userDoc = await getDoc(doc(db, "b2s_repas", currentMember));
-            const hasAccount = userDoc.exists() && userDoc.data().accountCreated;
+            const data = userDoc.exists() ? userDoc.data() : {};
+            const hasAccount = Boolean(data.accountCreated || data.email || data.uid);
 
             try {
                 if (hasAccount) {
-                    const email = userDoc.data().email;
+                    const email = data.email;
+                    if (!email) {
+                        authError.textContent = "Aucun e-mail associé à ce membre dans la base Firestore.";
+                        authError.classList.remove('hidden');
+                        return;
+                    }
                     await signInWithEmailAndPassword(auth, email, password);
+                    
+                    // Met à jour le drapeau accountCreated s'il était manquant
+                    if (!data.accountCreated) {
+                        await setDoc(doc(db, "b2s_repas", currentMember), { accountCreated: true }, { merge: true });
+                    }
                 } else {
                     const email = emailInput.value.trim();
                     if (!email) {
